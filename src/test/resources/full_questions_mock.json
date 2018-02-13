@@ -1,0 +1,60 @@
+{
+	"categories": {
+		"c0001": {"ordinal": 1, "name": "physical health"}, 
+		"c0005": {"ordinal": 5, "name": "finance"},
+		"c0007": {"ordinal": 4, "name": "relationships"}
+	},
+
+	"topics": {
+		"t0001": {"ordinal": 1, "name": "Spending", "category_id": "c0005"},
+		"t0003": {"ordinal": 3, "name": "Sleep", "category_id": "c0001"},
+		"t0004": {"ordinal": 2, "name": "Water consumption", "category_id": "c0001"},
+		"t0002": {"ordinal": 1, "name": "Close friends", "category_id": "c0007"}
+	},
+
+	"questions": {
+		"q0001": {
+			"ordinal": 1, "prompt": "Describe your dream(s).", "topic_id": "t0003", "type": "Free", "num_of_answers": 1
+		},
+		"q0002": {
+			"ordinal": 7,
+			"prompt": "How many ml water did you have today?",
+			"topic_id": "t0004",
+			"type": "Scale",
+			"critical_variance": 200,
+			"critical_low": 1000,
+			"critical_high": 2800,
+			"critical_duration": 2,
+			"range": {"range_start": 0, "range_stop": 3001, "range_step": 100},
+			"legend": null
+		},
+		"q0003": {
+			"ordinal": 3,
+			"prompt": "Select all categories your spending today falls under.",
+			"topic_id": "t0001",
+			"type": "Choice",
+			"critical_variance": 2,
+            "critical_low": -99999,
+            "critical_high": 3,
+            "critical_duration": 2,
+			"options": {
+				"e": {"abbreviation": "e", "full": "entertainment", "weight": 1},
+				"f": {"abbreviation": "f", "full": "food - eat out", "weight": 1},
+				"b": {"abbreviation": "b", "full": "bills", "weight": 2}, 
+				"r": {"abbreviation": "r", "full": "rent", "weight": 2}
+			}
+		},
+                "q0005": {
+			"ordinal": 2,
+                        "prompt": "How well did you sleep?",
+			"topic_id": "t0003",
+                        "type": "Scale",
+                        "critical_variance": 1,
+                        "critical_low": 1,
+                        "critical_high": -99999,
+                        "critical_duration": 3,
+                        "range": {"range_start": 1, "range_stop": 5, "range_step": 1},
+                        "legend": "1: Unable to stay asleep\n2: Slept but poorly\n3:Slept well\n4:Slept like a babe."
+		}
+	}
+}
