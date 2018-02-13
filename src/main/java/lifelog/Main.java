@@ -15,6 +15,7 @@ public class Main {
 		public static void main (String[] args) throws IOException, ParseException, BadStringOperationException {
 				Tools.print("from main");
 				loadState();
+				saveState();
 		}
 	
 		public static void loadState() throws IOException, ParseException, BadStringOperationException {
@@ -43,7 +44,22 @@ public class Main {
 				Tools.printTypeAndContent(feb10q3.answer, "q0003 answer");
 				*/
 		}
+		
+		public static void saveState() throws IOException {
+				//saveQuestions();
+				saveAnswers();
+		}
+		
+		public static void saveQuestions() {
+			;
+		}
+		
+		public static void saveAnswers() throws IOException {
+				AnswersEncoder.encodeAnswers();
+		}
 }
+
+//...TESTING
 
 //		//some kind of while program_is_on loop
 //		//if command -> do this function
