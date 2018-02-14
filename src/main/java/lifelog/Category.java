@@ -19,4 +19,12 @@ public class Category {
                 String name =  (String)map.get("name");
                 return new Category(id, ordinal, name);
         }
+        
+        @SuppressWarnings("unchecked") //JSONObject is not generic, cannot be parameterized
+		public JSONObject toJSONObject() {
+				JSONObject category_details = new JSONObject();
+				category_details.put("ordinal", this.ordinal);
+				category_details.put("name", this.name);
+				return category_details;
+        }
 }

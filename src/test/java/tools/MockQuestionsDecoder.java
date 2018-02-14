@@ -19,7 +19,7 @@ public class MockQuestionsDecoder {
 		String json_string = "";
 
 		try {
-			json_file = new FileReader("mock_questions.json");
+			json_file = new FileReader("C:\\Users\\latte\\git\\maven-lifelog\\lifelog\\src\\test\\resources\\limited_categories_topics_questions_mock.json");
 
 			int c;
 			while ((c = json_file.read()) != -1) {

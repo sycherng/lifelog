@@ -20,14 +20,4 @@ public abstract class AbstractQuestion implements Question {
          * instantiates a copy of an AbstractQuestion with date and answer fields.
          */
         public abstract AbstractQuestion createAnswerInstance(LocalDate date, String[] args);
-
-        /** Returns the JSON string that this instance should serialize to.
-         * For answered instances only.
-         */
-        public abstract String answeredToJsonString();
-
-        /** Returns the JSON string that this instance should serialize to.
-         * For answered instances only.
-         */
-        public abstract String templateToJsonString();
 }       

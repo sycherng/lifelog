@@ -1,5 +1,6 @@
 package lifelog;
 import org.json.simple.JSONObject;
+
 import java.time.LocalDate;
 import static java.lang.Math.toIntExact;
 
@@ -30,17 +31,15 @@ public class FreeQuestion extends AbstractQuestion {
         /** Returns the JSON string that this instance should serialize to.
          * For answered instances only.
          */
-        public String answeredToJsonString() {
-                //Unimplemented
-                return null;
-        }
-
-        /** Returns the JSON string that this instance should serialize to.
-         * For answered instances only.
-         */
-        public String templateToJsonString() {
-                //Unimplemented
-                return null;
+        @SuppressWarnings("unchecked")
+		public JSONObject templateToJSONObject() {
+                JSONObject question_details = new JSONObject();
+                question_details.put("ordinal", this.ordinal);
+                question_details.put("prompt", this.prompt);
+                question_details.put("topic_id", this.topic_id);
+                question_details.put("type", this.type);
+                question_details.put("num_of_answers", this.num_of_answers);
+                return question_details;           
         }
 }
 

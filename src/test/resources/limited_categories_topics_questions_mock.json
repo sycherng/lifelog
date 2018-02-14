@@ -1,0 +1,21 @@
+{
+        "q0001": {
+                "prompt": "How was the weather today?", 
+                "type": "Free",
+                "num_of_answers": 1
+        },
+        "q0002": {
+                "prompt": "Rate your mood from 1-100",
+                "type": "Scale",
+                "crit_var": 10,
+                "crit_low": 30,
+                "crit_hi": null,
+                "crit_dur": 2,
+                "range": {
+                        "range_start": 0,
+                        "range_stop": 101,
+                        "range_step": 1
+                },
+                "legend": null
+        }       
+}

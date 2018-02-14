@@ -1,6 +1,10 @@
 package lifelog;
 
+import org.json.simple.JSONObject;
+
 public interface Question {
-        public String answeredToJsonString();
-        public String templateToJsonString();
+	    /** Returns the JSON string that this instance should serialize to.
+	     * For answered instances only.
+	     */    
+		public JSONObject templateToJSONObject();
 }

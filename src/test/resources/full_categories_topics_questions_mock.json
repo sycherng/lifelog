@@ -34,14 +34,14 @@
 			"topic_id": "t0001",
 			"type": "Choice",
 			"critical_variance": 2,
-            "critical_low": -99999,
-            "critical_high": 3,
-            "critical_duration": 2,
+                        "critical_low": -99999,
+                        "critical_high": 3,
+                        "critical_duration": 2,
 			"options": {
-				"e": {"abbreviation": "e", "full": "entertainment", "weight": 1},
-				"f": {"abbreviation": "f", "full": "food - eat out", "weight": 1},
-				"b": {"abbreviation": "b", "full": "bills", "weight": 2}, 
-				"r": {"abbreviation": "r", "full": "rent", "weight": 2}
+				"e": {"full": "entertainment", "weight": 1},
+				"f": {"full": "food - eat out", "weight": 1},
+				"b": {"full": "bills", "weight": 2}, 
+				"r": {"full": "rent", "weight": 2}
 			}
 		},
                 "q0005": {

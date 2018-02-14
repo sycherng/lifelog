@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -21,7 +20,7 @@ public class AnswersDecoder {
 				String json_string = "";
 				
 				try {
-					json_file = new FileReader("C:\\Users\\latte\\git\\maven-lifelog\\lifelog\\src\\test\\resources\\full_answers_mock.json");
+					json_file = new FileReader("C:\\Users\\latte\\git\\maven-lifelog\\lifelog\\src\\test\\resources\\answers.json");
 
 					int c;
 					while ((c = json_file.read()) != -1) {

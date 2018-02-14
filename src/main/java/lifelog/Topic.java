@@ -22,5 +22,14 @@ public class Topic {
                 String category_id = (String) topic_map.get("category_id");
                 return new Topic(id, ordinal, name, category_id);
         }
+        
+        @SuppressWarnings("unchecked") //JSONObject is not generic, cannot be parameterized
+		public JSONObject toJSONObject() {
+		        JSONObject topic_details = new JSONObject();
+		        topic_details.put("ordinal", this.ordinal);
+		        topic_details.put("name", this.name);
+		        topic_details.put("category_id", this.category_id);
+		        return topic_details;
+        }
 }
 

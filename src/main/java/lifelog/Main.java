@@ -46,20 +46,10 @@ public class Main {
 		}
 		
 		public static void saveState() throws IOException {
-				//saveQuestions();
-				saveAnswers();
-		}
-		
-		public static void saveQuestions() {
-			;
-		}
-		
-		public static void saveAnswers() throws IOException {
-				AnswersEncoder.encodeAnswers();
+				QuestionsEncoder.encodeAll(); //encodes all categories, topics, questions
+				AnswersEncoder.encodeAnswers(); //encodes all answers
 		}
 }
-
-//...TESTING
 
 //		//some kind of while program_is_on loop
 //		//if command -> do this function

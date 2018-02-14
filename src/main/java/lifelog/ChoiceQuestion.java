@@ -6,8 +6,7 @@ import org.json.simple.JSONObject;
 import static java.lang.Math.toIntExact;
 
 public class ChoiceQuestion extends CriteriaQuestion{
-        public List<Option> options;
-        public HashMap<String, Option> options_map = null;
+        public ArrayList<Option> options;
 
         public ChoiceQuestion(String id, int ordinal, String prompt, String topic_id, int critical_low, int critical_high, int critical_variance, int critical_duration, HashMap<String, Option> options_map) {
                 super(id, ordinal, prompt, topic_id,  "Choice", critical_low, critical_high, critical_variance, critical_duration);
@@ -35,17 +34,19 @@ public class ChoiceQuestion extends CriteriaQuestion{
          * return List of Option
          */
         @SuppressWarnings("unchecked") //Unchecked cast from e.getValue() to HashMap<String, T> for JSON parsing of individual Option objects attributes.
-        public <T> List<Option> makeOptions(HashMap<String, T> options_map) {
-                List<Option> results = new ArrayList<Option>();
+        public <T> ArrayList<Option> makeOptions(HashMap<String, T> options_map) {
+                ArrayList<Option> results = new ArrayList<Option>();
                 for (Map.Entry<String, T> e: options_map.entrySet()) {
                         HashMap<String, T> option_attributes = (HashMap<String, T>)e.getValue();
-                        String abbrev = (String)option_attributes.get("abbreviation");
+                        String abbrev = (String)e.getKey();
                         char abbreviation = abbrev.charAt(0);
                         String full = (String)option_attributes.get("full");
                         int weight = toIntExact((Long)option_attributes.get("weight"));
                         Option new_option = new Option(abbreviation, full, weight);
                         results.add(new_option);
+                        //Tools.printTypeAndContent(new_option.full, "new option");
                 }
+                //Tools.printTypeAndContent(results, "results here");
                 return results;
         }
 
@@ -60,17 +61,27 @@ public class ChoiceQuestion extends CriteriaQuestion{
         /** Returns the JSON string that this instance should serialize to.
          * For answered instances only.
          */
-        public String answeredToJsonString() {
-                //Unimplemented
-                return null;
-        }
-
-        /** Returns the JSON string that this instance should serialize to.
-         * For answered instances only.
-         */
-        public String templateToJsonString() {
-                //Unimplemented
-                return null;
+        @SuppressWarnings("unchecked")
+		public JSONObject templateToJSONObject() {
+                JSONObject question_details = new JSONObject();
+                question_details.put("ordinal", this.ordinal);
+                question_details.put("prompt", this.prompt);
+                question_details.put("topic_id", this.topic_id);
+                question_details.put("type", this.type);
+                question_details.put("critical_low", this.critical_low);
+                question_details.put("critical_high", this.critical_high);
+                question_details.put("critical_variance", this.critical_variance);
+                question_details.put("critical_duration", this.critical_duration);
+                ArrayList<Option> option_object = this.options;
+                JSONObject all_options_details = new JSONObject();
+                for (Option o: option_object) {
+                		JSONObject single_option_details = new JSONObject();
+                		single_option_details.put("full", o.full);
+                		single_option_details.put("weight", o.weight);
+                		all_options_details.put(Character.toString(o.abbreviation), single_option_details);
+                }
+                question_details.put("options", all_options_details);
+                return question_details;           
         }
 
         public class Option {
