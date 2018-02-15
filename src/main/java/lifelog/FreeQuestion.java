@@ -7,17 +7,18 @@ import static java.lang.Math.toIntExact;
 public class FreeQuestion extends AbstractQuestion {
         public int num_of_answers;
 
-        public FreeQuestion(String id, int ordinal, String prompt, String topic_id, int num_of_answers) {
-                super(id, ordinal, prompt, topic_id, "Free");
+        public FreeQuestion(String id, int ordinal, String prompt, String topic_id, int num_of_answers, String ordinal_signature) {
+                super(id, ordinal, prompt, topic_id, "Free", ordinal_signature);
                 this.num_of_answers = num_of_answers;
         }
 
-        public static FreeQuestion makeFromMap(String id, JSONObject map) {
-                int ordinal = toIntExact((Long)map.get("ordinal"));
+        public static FreeQuestion makeFromMap(String ordinal_signature, JSONObject map) {
+                String id = (String)map.get("id");
+        		int ordinal = toIntExact((Long)map.get("ordinal"));
                 String prompt = (String)map.get("prompt");
                 String topic_id = (String)map.get("topic_id");
                 int num_of_answers = toIntExact((Long)map.get("num_of_answers"));
-                return new FreeQuestion(id, ordinal, prompt, topic_id, num_of_answers);
+                return new FreeQuestion(id, ordinal, prompt, topic_id, num_of_answers, ordinal_signature);
         }
 
         /** Called when user submits a fully answered response to a template FreeQuestion
@@ -34,6 +35,7 @@ public class FreeQuestion extends AbstractQuestion {
         @SuppressWarnings("unchecked")
 		public JSONObject templateToJSONObject() {
                 JSONObject question_details = new JSONObject();
+                question_details.put("id", this.id);
                 question_details.put("ordinal", this.ordinal);
                 question_details.put("prompt", this.prompt);
                 question_details.put("topic_id", this.topic_id);
