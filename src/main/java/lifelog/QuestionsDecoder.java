@@ -3,8 +3,6 @@ import java.io.IOException;
 import java.io.FileReader;
 import javax.management.BadStringOperationException;
 import java.util.*;
-import java.util.Map.Entry;
-
 import org.json.simple.parser.*;
 import org.json.simple.JSONObject;
 

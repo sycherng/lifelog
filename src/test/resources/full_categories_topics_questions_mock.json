@@ -1,14 +1,14 @@
 {
 	"categories": {
-		"010000": {"ordinal": 1, "name": "physical health", "id": "c0001"}, 
-		"020000": {"ordinal": 2, "name": "finance", "id": "c0005"},
-		"030000": {"ordinal": 3, "name": "relationships", "id": "c0007"}
+		"030000": {"ordinal": 3, "name": "Physical health", "id": "c0001"}, 
+		"020000": {"ordinal": 2, "name": "Finance", "id": "c0005"},
+		"010000": {"ordinal": 1, "name": "Relationships", "id": "c0007"}
 	},
 
 	"topics": {
 		"020100": {"ordinal": 1, "name": "Spending", "category_id": "c0005", "id": "t0001"},
-		"010100": {"ordinal": 1, "name": "Sleep", "category_id": "c0001", "id": "t0003"},
-		"010200": {"ordinal": 2, "name": "Water consumption", "category_id": "c0001", "id": "t0004"},
+		"010200": {"ordinal": 2, "name": "Sleep", "category_id": "c0001", "id": "t0003"},
+		"010100": {"ordinal": 1, "name": "Water consumption", "category_id": "c0001", "id": "t0004"},
 		"030100": {"ordinal": 2, "name": "Close friends", "category_id": "c0007", "id": "t0002"}
 	},
 
