@@ -45,9 +45,9 @@ public class QuestionsEncoder {
 		private static JSONObject categoriesToJSONString() {
 				JSONObject categories_map = new JSONObject();
 				for (Map.Entry<String, Category> e: Main.categories.entrySet()) {
-			        	String ordinal_signature = (String) e.getKey();
+			        	String category_id = (String) e.getKey();
 						Category category_object = (Category) e.getValue();
-						categories_map.put(ordinal_signature, category_object.toJSONObject());
+						categories_map.put(category_id, category_object.toJSONObject());
 				}
 				return categories_map;
 		}
@@ -56,9 +56,9 @@ public class QuestionsEncoder {
 		private static JSONObject topicsToJSONString() {
 				JSONObject topics_map = new JSONObject();
 				for (Map.Entry<String, Topic> e: Main.topics.entrySet()) {
-						String ordinal_signature = (String) e.getKey();
+						String topic_id = (String) e.getKey();
 						Topic topic_object = (Topic) e.getValue();
-						topics_map.put(ordinal_signature, topic_object.toJSONObject());
+						topics_map.put(topic_id, topic_object.toJSONObject());
 				}
 				return topics_map;
 		}
@@ -67,14 +67,14 @@ public class QuestionsEncoder {
 		private static JSONObject questionsToJSONString() {
 				JSONObject questions_map = new JSONObject();
 				for (Map.Entry<String, AbstractQuestion> e: Main.questions.entrySet()) {
-						String ordinal_signature = (String) e.getKey();
+						String question_id = (String) e.getKey();
 						AbstractQuestion question_object = (AbstractQuestion) e.getValue();
 						if (question_object.type.equals("Free")) {
-								questions_map.put(ordinal_signature, ((FreeQuestion)question_object).templateToJSONObject());
+								questions_map.put(question_id, ((FreeQuestion)question_object).templateToJSONObject());
 						} else if (question_object.type.equals("Scale")) {
-								questions_map.put(ordinal_signature, ((ScaleQuestion)question_object).templateToJSONObject());
+								questions_map.put(question_id, ((ScaleQuestion)question_object).templateToJSONObject());
 						} else if (question_object.type.equals("Choice")) {
-								questions_map.put(ordinal_signature, ((ChoiceQuestion)question_object).templateToJSONObject());
+								questions_map.put(question_id, ((ChoiceQuestion)question_object).templateToJSONObject());
 						}
 				}
 				return questions_map;

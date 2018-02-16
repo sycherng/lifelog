@@ -8,8 +8,8 @@ import static java.lang.Math.toIntExact;
 public class ChoiceQuestion extends CriteriaQuestion{
         public ArrayList<Option> options;
 
-        public ChoiceQuestion(String id, int ordinal, String prompt, String topic_id, int critical_low, int critical_high, int critical_variance, int critical_duration, HashMap<String, Option> options_map, String ordinal_signature) {
-                super(id, ordinal, prompt, topic_id,  "Choice", critical_low, critical_high, critical_variance, critical_duration, ordinal_signature);
+        public ChoiceQuestion(String id, int ordinal, String prompt, String topic_id, int critical_low, int critical_high, int critical_variance, int critical_duration, HashMap<String, Option> options_map) {
+                super(id, ordinal, prompt, topic_id,  "Choice", critical_low, critical_high, critical_variance, critical_duration);
                 this.options = makeOptions(options_map);
         }
 
@@ -17,9 +17,8 @@ public class ChoiceQuestion extends CriteriaQuestion{
          * and return it as a ChoiceQuestion object
          */
         @SuppressWarnings("unchecked") //Unchecked cast from map.get("options") to HashMap<String, Option> for JSON parsing of Option objects HashMap.
-        public static ChoiceQuestion makeFromMap(String ordinal_signature, JSONObject map) {
-        		String id = (String)map.get("id");
-        		int ordinal = toIntExact((Long)map.get("ordinal"));
+        public static ChoiceQuestion makeFromMap(String id, JSONObject map) {
+                int ordinal = toIntExact((Long)map.get("ordinal"));
                 String prompt = (String)map.get("prompt");
                 String topic_id = (String)map.get("topic_id");
                 int critical_low = toIntExact((Long)map.get("critical_low"));
@@ -27,7 +26,7 @@ public class ChoiceQuestion extends CriteriaQuestion{
                 int critical_variance = toIntExact((Long)map.get("critical_variance"));
                 int critical_duration = toIntExact((Long)map.get("critical_duration"));
                 HashMap<String, Option> options_map = (HashMap<String, Option>)map.get("options");
-                return new ChoiceQuestion(id, ordinal, prompt, topic_id, critical_low, critical_high, critical_variance, critical_duration, options_map, ordinal_signature);
+                return new ChoiceQuestion(id, ordinal, prompt, topic_id, critical_low, critical_high, critical_variance, critical_duration, options_map);
        }
 
         /** Given a HashMap(int, HashMap(String, T)) with the following format:
@@ -65,7 +64,6 @@ public class ChoiceQuestion extends CriteriaQuestion{
         @SuppressWarnings("unchecked")
 		public JSONObject templateToJSONObject() {
                 JSONObject question_details = new JSONObject();
-                question_details.put("id", this.id);
                 question_details.put("ordinal", this.ordinal);
                 question_details.put("prompt", this.prompt);
                 question_details.put("topic_id", this.topic_id);

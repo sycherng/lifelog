@@ -49,6 +49,7 @@ public class AnswersEncoder {
 				FileWriter writer = new FileWriter("C:\\Users\\latte\\git\\maven-lifelog\\lifelog\\src\\test\\resources\\answers.json");
 				try {
 						writer.write(json_string);
+						System.out.println("here");
 				} finally {
 						writer.close();
 				}

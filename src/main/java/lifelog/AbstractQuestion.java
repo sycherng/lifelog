@@ -7,15 +7,13 @@ public abstract class AbstractQuestion implements Question {
         public String prompt;
         public String topic_id;
         public String type;
-        public String ordinal_signature;
 
-        public AbstractQuestion(String id, int ordinal, String prompt, String topic_id, String type, String ordinal_signature) {
+        public AbstractQuestion(String id, int ordinal, String prompt, String topic_id, String type) {
                 this.id = id;
                 this.ordinal = ordinal;
                 this.prompt = prompt;
                 this.topic_id = topic_id;
                 this.type = type;
-                this.ordinal_signature = ordinal_signature;
         }
 
         /** Called when user submits a fully answered response to a template question
