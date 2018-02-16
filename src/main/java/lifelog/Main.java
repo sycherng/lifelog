@@ -19,8 +19,7 @@ public class Main {
 		public static void main (String[] args) throws IOException, ParseException, BadStringOperationException {
 				loadState();
 				Console c = System.console();
-				showCategories(c);
-				/*if (c == null) {
+				if (c == null) {
 						System.err.println("No console.");
 						System.exit(1);
 				} else {
@@ -48,7 +47,7 @@ public class Main {
 								}
 								//if (command.equals()) {}
 						}
-				}*/
+				}
 				saveState();
 		}
 
@@ -88,49 +87,31 @@ public class Main {
 						showQuestions(c);
 				}				
 		}
-		private static String formatShow(String parent_id, String parent_name, ArrayList<String> member_names) {
-				StringBuilder result = new StringBuilder();
-				result.append(String.format(" %1$s | %2$s\n", parent_id, parent_name));
-				for (String name: member_names) {
-						result.append(new String(new char[8]).replace("\0", " ")); //add 8 spaces
-						result.append("> ");
-						result.append(name);
-						result.append("\n");
-				}
-				return result.toString();
-		}
 		
-		private static HashMap<String, ArrayList<String>> getCategoryMemberNames() {
+		private static void showCategories(Console c) {
 				//iterate over all topics to grab their category_ids
-				//place in a hashmap of category_id : array of names of member topics
-				HashMap<String, ArrayList<String>> category_to_topic_names = new HashMap<>();
-				for (Map.Entry<String, Topic> t_entry: Main.topics.entrySet()) { //for all topics
-						Topic topic = t_entry.getValue(); //topic
-						String category_id = topic.category_id; //topic's category id
-						String topic_name = topic.name; //topic's name
-						if (category_to_topic_names.containsKey(category_id)) { //if already in the map
-								ArrayList<String> child_topic_names = category_to_topic_names.get(category_id); //grab the array
-								child_topic_names.add(topic_name); //add name to the array
-						} else { //if not already in the map
-								ArrayList<String> child_topic_names = new ArrayList<>();  //make a new arr
-								child_topic_names.add(topic_name); //add the topic name to it
-								category_to_topic_names.put(category_id, child_topic_names); //add as new entry
+				//place in a hashmap of category_id : ArrayList<Topic>
+				HashMap<String, ArrayList<Topic>> category_members = new HashMap<>();
+				for (Map.Entry<String, Topic> t_entry: Main.topics.entrySet()) {
+						Topic t = t_entry.getValue();
+						String category_id = t.category_id;
+						if (category_members.containsKey(category_id)) {
+								ArrayList<Topic> list_of_topics = category_members.get(category_id);
+								list_of_topics.add(t);
+						} else {
+								ArrayList<Topic> list_of_topics = new ArrayList<>();
+								list_of_topics.add(t);
+								category_members.put(category_id, list_of_topics);
 						}
 				}
-				return category_to_topic_names;
-		}
-				
-		private static void showCategories(Console c) {
-			HashMap<String, ArrayList<String>> category_to_topic_names = getCategoryMemberNames();
 				for (Map.Entry<String, Category> c_entry: Main.categories.entrySet()) {
 						//for each category, list the prompt, ordinal, and members
 						//ensure it is sorted by ordinal on testing
 						String ordinal_signature = c_entry.getKey();
 						Category current_category = c_entry.getValue();
-						ArrayList<String> child_topic_names = category_to_topic_names.get(current_category.id);
-						String result = formatShow(current_category.id, current_category.name, child_topic_names);
-						System.out.println(result);
+						System.out.println("formatting placeholder here"); //TODO figure out formatting of display
 				}
+			
 		}
 
 		private static void showTopics(Console c) {
