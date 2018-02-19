@@ -18,14 +18,12 @@ public class ScaleQuestion extends CriteriaQuestion{
 		public static ScaleQuestion makeFromMap(String id, JSONObject map) {
 				int ordinal = toIntExact((Long)map.get("ordinal"));
 				String prompt = (String) map.get("prompt");
-				Tools.print(prompt);
 				String topic_id = (String) map.get("topic_id");
 				int critical_variance = toIntExact((Long)map.get("critical_variance"));
 				int critical_low = toIntExact((Long)map.get("critical_low"));
 				int critical_high = toIntExact((Long)map.get("critical_high"));
 				int critical_duration = toIntExact((Long)map.get("critical_duration"));
 				HashMap<String, Long> range = (HashMap<String, Long>) map.get("range");
-				Tools.printTypeAndContent(range.get("range_start"), "range_start");
 				int range_start = toIntExact((Long)range.get("range_start"));
 				int range_stop = toIntExact((Long)range.get("range_stop"));
 				int range_step = toIntExact((Long)range.get("range_step"));

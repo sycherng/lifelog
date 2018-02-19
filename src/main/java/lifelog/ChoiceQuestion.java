@@ -44,9 +44,7 @@ public class ChoiceQuestion extends CriteriaQuestion{
                         int weight = toIntExact((Long)option_attributes.get("weight"));
                         Option new_option = new Option(abbreviation, full, weight);
                         results.add(new_option);
-                        //Tools.printTypeAndContent(new_option.full, "new option");
                 }
-                //Tools.printTypeAndContent(results, "results here");
                 return results;
         }
 
@@ -96,4 +94,3 @@ public class ChoiceQuestion extends CriteriaQuestion{
                 }
         }
 }
-

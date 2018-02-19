@@ -16,11 +16,6 @@ public class QuestionsEncoder {
 				JSONObject categories_jsonobject = categoriesToJSONString();
 				JSONObject topics_jsonobject = topicsToJSONString();
 				JSONObject questions_jsonobject = questionsToJSONString();
-				/*//test
-				Tools.printTypeAndContent(categories_jsonobject, "categories_jsonobject");
-				Tools.printTypeAndContent(topics__jsonobject, "topics_jsonobject");
-				Tools.printTypeAndContent(questions_jsonobject, "questions_jsonobject");
-				*/
 				//put all into one object
 				JSONObject combined_jsonobject = new JSONObject();
 				combined_jsonobject.put("categories", categories_jsonobject);

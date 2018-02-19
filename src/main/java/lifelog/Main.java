@@ -1,60 +1,255 @@
 package lifelog;
+import java.io.Console;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.management.BadStringOperationException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import java.time.LocalDate;
 
 public class Main {
-		public static HashMap<String, Category> categories;
-		public static HashMap<String, Topic> topics;
-		public static HashMap<String, AbstractQuestion> questions;
-		public static HashMap<LocalDate, HashMap<String, Answer>> answers;
+	public static HashMap<String, Category> categories;
+	public static HashMap<String, Topic> topics;
+	public static HashMap<String, AbstractQuestion> questions;
+	public static HashMap<LocalDate, HashMap<String, Answer>> answers;
+	public static LinkedList<String> category_hierarchy = new LinkedList<String>();
+	public static HashMap<String, LinkedList<String>> topic_hierarchy= new HashMap<>();
+	public static HashMap<String, LinkedList<String>> question_hierarchy = new HashMap<>();
 	
-		public static void main (String[] args) throws IOException, ParseException, BadStringOperationException {
-				Tools.print("from main");
-				loadState();
-				saveState();
-		}
+	public static void main (String[] args) throws IOException, ParseException, BadStringOperationException {
+		loadState();
+		//Tools.printTypeAndContent(category_hierarchy, "cat-h");
+		//Tools.printTypeAndContent(topic_hierarchy, "top-h");
+		//Tools.printTypeAndContjent(question_hierarchy, "que-h");
+		/*Console c = System.console();
+		if (c == null) {
+			System.err.println("No console.");
+			System.exit(1);
+		} else {
+			while (true) {
+				System.out.println("Welcome back to your lifelog.");
+				String command = c.readLine();
+				if (command.equals("quit")) {
+					saveState();
+					System.exit(1);
+				}
+				else if (command.equals("show")) {
+					System.out.println("Did you mean \"show all\"?");
+				}
+				else if (command.equals("show all")) {
+					showAll(c);
+				}
+				else if (command.equals("show categories") || command.equals("show c")) {
+					showCategories(c);
+				}
+				else if (command.equals("show topics") || command.equals("show t")) {
+					showTopics(c);
+				}
+				else if (command.equals("show questions") || command.equals("show q")) {
+					showQuestions(c);
+				}
+				else if (command.equals("help")) {
+					helpText(c);
+				}
+				//if (command.equals()) {}
+			}
+		}*/
+		saveState();
+		System.out.println("Program closed.");
+	}
 	
-		public static void loadState() throws IOException, ParseException, BadStringOperationException {
-				loadQuestions();
-				loadAnswers();
-		}
+	private static void loadState() throws IOException, ParseException, BadStringOperationException {
+		loadQuestions();
+		loadAnswers();
+		buildMemberStructure();
+	}
 		
-		public static void loadQuestions() throws IOException, ParseException, BadStringOperationException {
-				String json_string = QuestionsDecoder.getJSONString();
-		        JSONObject json_object = QuestionsDecoder.stringToJSONObject(json_string);
-		        categories = QuestionsDecoder.decodeCategory(json_object);
-		        topics = QuestionsDecoder.decodeTopic(json_object);
-		        questions = QuestionsDecoder.decodeQuestions(json_object);
-		}
+	private static void loadQuestions() throws IOException, ParseException, BadStringOperationException {
+		String json_string = QuestionsDecoder.getJSONString();
+        JSONObject json_object = QuestionsDecoder.stringToJSONObject(json_string);
+        categories = QuestionsDecoder.decodeCategory(json_object);
+        topics = QuestionsDecoder.decodeTopic(json_object);
+        questions = QuestionsDecoder.decodeQuestions(json_object);
+	}
 	
-		public static void loadAnswers() throws IOException, ParseException, BadStringOperationException {
-				String json_string = AnswersDecoder.getJSONString();
-				JSONObject json_object = AnswersDecoder.stringToJSONObject(json_string);
-				answers = AnswersDecoder.decodeAllAnswers(json_object);
-				
-				/*
-				Tools.printTypeAndContent(answers, "answers");
-				HashMap feb10 = answers.get(LocalDate.parse("2018-02-10"));
-				Tools.printTypeAndContent(feb10, "feb 10 answers");
-				Answer feb10q3 = (Answer) feb10.get("q0003");
-				Tools.printTypeAndContent(feb10q3.answer, "q0003 answer");
-				*/
+	private static void loadAnswers() throws IOException, ParseException, BadStringOperationException {
+		String json_string = AnswersDecoder.getJSONString();
+		JSONObject json_object = AnswersDecoder.stringToJSONObject(json_string);
+		answers = AnswersDecoder.decodeAllAnswers(json_object);
+	}
+
+	private static void buildMemberStructure() {
+		buildCategoryHierarchy();
+		buildTopicHierarchy();
+		buildQuestionHierarchy();
+	}
+	private static void buildCategoryHierarchy() {
+		LinkedList<Category> temp_category_hierarchy = (LinkedList<Category>)categories.values().stream()
+				.collect(Collectors.toCollection(LinkedList::new));
+		Collections.sort(temp_category_hierarchy, new Comparator<Category>() {
+		    @Override
+		    public int compare(Category a, Category b) {
+		        return b.ordinal - a.ordinal;
+		    }
+		});
+		for (Category e: temp_category_hierarchy) {
+			//Tools.printTypeAndContent(category_hierarchy, "cat hier");
+			category_hierarchy.addLast(e.id);
+		}		
+	}
+	
+	private static void buildTopicHierarchy() {
+		//HashMap<String, LinkedList<String>> topic_hierarchy
+		//HashMap<cat_id, LinkedList<Top_id>>
+		HashMap<String, ArrayList<Topic>> temp = new HashMap<>(); //category id: member Topics
+		for (Map.Entry<String, Topic> e: topics.entrySet()) {
+			Topic topic = e.getValue();
+			String category_id = topic.category_id;
+			if (temp.containsKey(category_id)) {
+				ArrayList<Topic> old_list = temp.get(category_id);
+				old_list.add(topic);		
+			} else {
+				ArrayList<Topic> new_list = new ArrayList<>();
+				new_list.add(topic);
+				temp.put(category_id, new_list);
+			}
+		} for (Map.Entry<String, ArrayList<Topic>> te: temp.entrySet()) {
+			String category_id = te.getKey();
+			ArrayList<Topic> members = te.getValue();
+			Collections.sort(members, new Comparator<Topic>() {
+				@Override
+				public int compare(Topic a, Topic b) {
+					return b.ordinal - a.ordinal;
+				}
+			});
+			LinkedList<String> member_list = new LinkedList<>();
+			for (Topic member: members) {
+				member_list.add(member.id);
+			}
+			topic_hierarchy.put(category_id, member_list);
 		}
+	}
+	
+	private static void buildQuestionHierarchy() {
+		//HashMap<String, LinkedList<String>> question_hierarchy
+		//HashMap<top_id, LinkedList<que_id>>
+		HashMap<String, ArrayList<AbstractQuestion>> temp = new HashMap<>(); //topic id: member AbstractQuestions
+		for (Map.Entry<String, AbstractQuestion> e: questions.entrySet()) {
+			AbstractQuestion question = e.getValue();
+			String topic_id = question.topic_id;
+			if (temp.containsKey(topic_id)) {
+				ArrayList<AbstractQuestion> old_list = temp.get(topic_id);
+				old_list.add(question);		
+			} else {
+				ArrayList<AbstractQuestion> new_list = new ArrayList<>();
+				new_list.add(question);
+				temp.put(topic_id, new_list);
+			}
+		} for (Map.Entry<String, ArrayList<AbstractQuestion>> te: temp.entrySet()) {
+			String topic_id = te.getKey();
+			ArrayList<AbstractQuestion> members = te.getValue();
+			Collections.sort(members, new Comparator<AbstractQuestion>() {
+				@Override
+				public int compare(AbstractQuestion a, AbstractQuestion b) {
+					return b.ordinal - a.ordinal;
+				}
+			});
+			LinkedList<String> member_list = new LinkedList<>();
+			for (AbstractQuestion member: members) {
+				member_list.add(member.id);
+			}
+			question_hierarchy.put(topic_id, member_list);
+		}
+	}
+
+	private static void saveState() throws IOException {
+		updateOrdinals();
+		QuestionsEncoder.encodeAll(); //encodes all categories, topics, questions
+		AnswersEncoder.encodeAnswers(); //encodes all answers
+	}
+
+	private static void updateOrdinals() {
+		// TODO Auto-generated method stub
 		
-		public static void saveState() throws IOException {
-				QuestionsEncoder.encodeAll(); //encodes all categories, topics, questions
-				AnswersEncoder.encodeAnswers(); //encodes all answers
+	}
+
+	private static void showAll(Console c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static String formatShow(String parent_id, String parent_name, ArrayList<String> member_names) {
+		StringBuilder result = new StringBuilder();
+		result.append(String.format(" %1$s | %2$s\n", parent_id, parent_name));
+		for (String name: member_names) {
+				result.append(new String(new char[8]).replace("\0", " ")); //add 8 spaces
+				result.append("> ");
+				result.append(name);
+				result.append("\n");
 		}
+		return result.toString();
+	}
+	
+	private static void showCategories(Console c) {
+		// TODO here
+		HashMap<String, ArrayList<Topic>> category_to_topic_names = getCategoryMembers();
+		TreeMap<Integer, String> print_sequence = new TreeMap<>();
+		for (Map.Entry<String, Category> e: Main.categories.entrySet()) {
+			String category_id = e.getKey();
+			Category category = e.getValue();
+			ArrayList member_names = category_to_topic_names.get(category_id)
+			String result = formatShow(category_id, category.name, category_to_topic_names.get(category_id));
+			print_sequence.put(category.ordinal, result);
+		}
+		for (Map.Entry<Integer, String> e: print_sequence.entrySet()) {
+			System.out.println(e.getValue());
+		}
+	}
+
+	/** return a HashMap of category ids to a sorted array of member Topics
+	 * sort by Topic.ordinal
+	 */
+	private static HashMap<String, ArrayList<Topic>> getCategoryMembers() {
+		HashMap<String, ArrayList<Topic>> sorted_topics = new HashMap<>();
+		for (Map.Entry<String, Topic> t_entry: Main.topics.entrySet()) {
+			Topic topic = t_entry.getValue();
+			String category_id = topic.category_id;
+			if (sorted_topics.containsKey(category_id)) { //if already in sorted_topics
+				ArrayList<Topic> topic_array = sorted_topics.get(category_id);
+				topic_array.add(topic);
+			} else {
+				ArrayList<Topic> topic_array = new ArrayList<>();
+					topic_array.add(topic);
+					sorted_topics.put(category_id, topic_array);
+			}
+		}
+		for (Entry<String, ArrayList<Topic>> e: sorted_topics.entrySet()) {
+			ArrayList<Topic> topic_array = e.getValue();
+			topic_array.sort((a, b) -> a.ordinal - b.ordinal);
+		}
+		return sorted_topics;
+}
+	
+	private static void showTopics(Console c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void showQuestions(Console c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void helpText(Console c) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
-//		//some kind of while program_is_on loop
-//		//if command -> do this function
-//		//if exit command -> end program
-//	}
 ///* Inserting a new answer
 // * 1. insertion (Date, question_id, String[]) -> AbstractQuestion
 // * 2. autosave: take the AbstractQuestion we just made, serialize it, and add it to the answers json
