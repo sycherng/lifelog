@@ -22,11 +22,7 @@ public class Main {
 	
 	public static void main (String[] args) throws IOException, ParseException, BadStringOperationException {
 		loadState();
-		showAll();
-		//Tools.printTypeAndContent(category_hierarchy, "cat-h");
-		//Tools.printTypeAndContent(topic_hierarchy, "top-h");
-		//Tools.printTypeAndContjent(question_hierarchy, "que-h");
-		/*Console c = System.console();
+		Console c = System.console();
 		if (c == null) {
 			System.err.println("No console.");
 			System.exit(1);
@@ -38,29 +34,28 @@ public class Main {
 					saveState();
 					System.exit(1);
 				}
-				else if (command.equals("show")) {
-					System.out.println("Did you mean \"show all\"?");
-				}
 				else if (command.equals("show all")) {
 					showAll();
 				}
 				else if (command.equals("show categories") || command.equals("show c")) {
-					showCategories(c);
+					showCategories();
 				}
 				else if (command.equals("show topics") || command.equals("show t")) {
-					showTopics(c);
+					showTopics();
 				}
 				else if (command.equals("show questions") || command.equals("show q")) {
-					showQuestions(c);
+					showQuestions();
+				}
+				else if (command.startsWith("move") && (command.length() == 2)) {
+					move(c, command);
 				}
 				else if (command.equals("help")) {
-					helpText(c);
+					helpText();
 				}
-				//if (command.equals()) {}
 			}
-		}*/
+		}
 		saveState();
-		System.out.println("Program closed.");
+		System.out.println("Shutting down...");
 	}
 	
 	private static void loadState() throws IOException, ParseException, BadStringOperationException {
@@ -271,7 +266,74 @@ public class Main {
 		}
 	}
 	
-	private static void helpText(Console c) {
+	private static void move(Console c, String message) {
+		Boolean contains = false;
+		String target = message.split(" ")[1];
+		HashMap<String, LinkedList<String>> target_list = null;
+		char initial = target.charAt(0);
+		if ((initial == 'c') && (category_hierarchy.contains(target))) {
+				contains = true;
+				moveMode(c, target, category_hierarchy);
+		} else if (initial == 't') {
+			target_list = topic_hierarchy;
+		} else if (initial == 'q') {
+			target_list = question_hierarchy; 
+		}
+		
+		if (target_list != null) {
+			for (Map.Entry<String, LinkedList<String>> e: target_list.entrySet()) {
+				LinkedList<String> ll = e.getValue();
+				if (ll.contains(target)) {
+					contains = true;
+					moveMode(c, target, ll);
+				}
+			} 
+		}
+		
+		if (contains == false) {
+			System.out.println("Invalid id provided.");
+		}
+	}
+	
+	private static void moveMode(Console c, String target, LinkedList<String> ll) {
+		String response = "";
+		while (true) {
+			printTempOrder(ll, target);
+			System.out.println("(u) move up\n(d) move down\n(f) finish and exit move mode");
+			response = c.readLine();
+
+			if (response == "f") {
+				return;
+			
+			} else {
+				int initial_index = ll.indexOf(target);
+				int diff = 0;
+				
+				if (response.equals("u")) {
+					diff = -1;
+				} else if (response.equals("d")) {
+					diff = 1;
+				}
+				String replacement = ll.get(initial_index + diff);
+				ll.set(initial_index, replacement);
+				ll.set(initial_index + diff, target);
+			}
+		}
+	}
+	
+	private static void printTempOrder(LinkedList<String> ll, String target) {
+		StringBuilder sb = new StringBuilder();
+		for (String s: ll) {
+			sb.append(s);
+			if (s.equals(target)) {
+				sb.append(" <-");
+			}
+			sb.append("\n");
+		}
+		System.out.println(sb.toString());
+	}
+
+	private static void helpText() {
 		// TODO Auto-generated method stub
 		
 	}
