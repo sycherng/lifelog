@@ -22,7 +22,7 @@ public class Main {
 	
 	public static void main (String[] args) throws IOException, ParseException, BadStringOperationException {
 		loadState();
-		showAll();
+		showQuestions();
 		//Tools.printTypeAndContent(category_hierarchy, "cat-h");
 		//Tools.printTypeAndContent(topic_hierarchy, "top-h");
 		//Tools.printTypeAndContjent(question_hierarchy, "que-h");
@@ -203,91 +203,70 @@ public class Main {
 
 	private static void showAll() {
 		StringBuilder sb = new StringBuilder();
+		appendCategories(sb, true, true);
+		System.out.println(sb.toString());
+	}
+	
+	private static void appendCategories(StringBuilder sb, Boolean append_topics, Boolean append_questions) {
 		for (String category_id: category_hierarchy) {
 			sb.append(String.format("%1$s | %2$s\n", 
 					category_id, 
 					categories.get(category_id).prompt
 					));
-			if (topic_hierarchy.containsKey(category_id)) {
-				for (String topic_id: topic_hierarchy.get(category_id)) {
-					sb.append((String.format("\t> %1$s (%2$s)\n",
-							topics.get(topic_id).prompt,
-							topic_id
-							)));
-			
-					if (question_hierarchy.containsKey(topic_id)) {
-						for (String question_id: question_hierarchy.get(topic_id)) {
-							sb.append((String.format("\t\tL %1$s (%2$s)\n",
-									questions.get(question_id).prompt,
-									question_id
-									)));
-						}
-					}
+			if (append_topics) {
+				appendTopics(category_id, sb, append_questions);
+
+			}
+		}
+	}
+	
+	private static void appendTopics(String category_id, StringBuilder sb, Boolean append_questions) {
+		if (topic_hierarchy.containsKey(category_id)) {
+			for (String topic_id: topic_hierarchy.get(category_id)) {
+				sb.append((String.format("\t> %1$s (%2$s)\n",
+						topics.get(topic_id).prompt,
+						topic_id
+						)));
+				if (append_questions) {
+					appendQuestions(topic_id, sb);
 				}
 			}
-		} System.out.println(sb.toString());
-	}
-
-	private static String formatShow(String parent_id, String parent_name, ArrayList<String> member_names) {
-		StringBuilder result = new StringBuilder();
-		result.append(String.format(" %1$s | %2$s\n", parent_id, parent_name));
-		for (String name: member_names) {
-				result.append(new String(new char[8]).replace("\0", " ")); //add 8 spaces
-				result.append("> ");
-				result.append(name);
-				result.append("\n");
 		}
-		return result.toString();
 	}
 	
-	private static void showCategories(Console c) {
-		// TODO here
-		HashMap<String, ArrayList<Topic>> category_to_topic_names = getCategoryMembers();
-		TreeMap<Integer, String> print_sequence = new TreeMap<>();
-		for (Map.Entry<String, Category> e: Main.categories.entrySet()) {
-			String category_id = e.getKey();
-			Category category = e.getValue();
-			ArrayList member_names = category_to_topic_names.get(category_id)
-			String result = formatShow(category_id, category.name, category_to_topic_names.get(category_id));
-			print_sequence.put(category.ordinal, result);
-		}
-		for (Map.Entry<Integer, String> e: print_sequence.entrySet()) {
-			System.out.println(e.getValue());
-		}
-	}
-
-	/** return a HashMap of category ids to a sorted array of member Topics
-	 * sort by Topic.ordinal
-	 */
-	private static HashMap<String, ArrayList<Topic>> getCategoryMembers() {
-		HashMap<String, ArrayList<Topic>> sorted_topics = new HashMap<>();
-		for (Map.Entry<String, Topic> t_entry: Main.topics.entrySet()) {
-			Topic topic = t_entry.getValue();
-			String category_id = topic.category_id;
-			if (sorted_topics.containsKey(category_id)) { //if already in sorted_topics
-				ArrayList<Topic> topic_array = sorted_topics.get(category_id);
-				topic_array.add(topic);
-			} else {
-				ArrayList<Topic> topic_array = new ArrayList<>();
-					topic_array.add(topic);
-					sorted_topics.put(category_id, topic_array);
+	private static void appendQuestions(String topic_id, StringBuilder sb) {
+		if (question_hierarchy.containsKey(topic_id)) {
+			for (String question_id: question_hierarchy.get(topic_id)) {
+				sb.append((String.format("\t\tL %1$s (%2$s)\n",
+						questions.get(question_id).prompt,
+						question_id
+						)));
 			}
 		}
-		for (Entry<String, ArrayList<Topic>> e: sorted_topics.entrySet()) {
-			ArrayList<Topic> topic_array = e.getValue();
-			topic_array.sort((a, b) -> a.ordinal - b.ordinal);
-		}
-		return sorted_topics;
-}
+	}
 	
-	private static void showTopics(Console c) {
-		// TODO Auto-generated method stub
-		
+	private static void showCategories() {
+		StringBuilder sb = new StringBuilder();
+		appendCategories(sb, true, false);
+		System.out.println(sb.toString());
+	}
+	
+	private static void showTopics() {
+		StringBuilder sb = new StringBuilder();
+		for (String category_id: category_hierarchy) {
+			appendTopics(category_id, sb, true);
+		}
+		System.out.println(sb.toString());		
 	}
 
-	private static void showQuestions(Console c) {
-		// TODO Auto-generated method stub
-		
+	private static void showQuestions() {
+		StringBuilder sb = new StringBuilder();
+		for (LinkedList<String> topic_ll: topic_hierarchy.values()) {
+			for (String topic_id: topic_ll) {
+				appendQuestions(topic_id, sb);
+			}
+		}
+		System.out.println(sb.toString());
 	}
 
 	private static void helpText(Console c) {
