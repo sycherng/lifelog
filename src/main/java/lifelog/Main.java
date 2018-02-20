@@ -22,6 +22,7 @@ public class Main {
 	
 	public static void main (String[] args) throws IOException, ParseException, BadStringOperationException {
 		loadState();
+		showAll();
 		//Tools.printTypeAndContent(category_hierarchy, "cat-h");
 		//Tools.printTypeAndContent(topic_hierarchy, "top-h");
 		//Tools.printTypeAndContjent(question_hierarchy, "que-h");
@@ -41,7 +42,7 @@ public class Main {
 					System.out.println("Did you mean \"show all\"?");
 				}
 				else if (command.equals("show all")) {
-					showAll(c);
+					showAll();
 				}
 				else if (command.equals("show categories") || command.equals("show c")) {
 					showCategories(c);
@@ -200,9 +201,31 @@ public class Main {
 		}
 	}
 
-	private static void showAll(Console c) {
-		// TODO Auto-generated method stub
-		
+	private static void showAll() {
+		StringBuilder sb = new StringBuilder();
+		for (String category_id: category_hierarchy) {
+			sb.append(String.format("%1$s | %2$s\n", 
+					category_id, 
+					categories.get(category_id).prompt
+					));
+			if (topic_hierarchy.containsKey(category_id)) {
+				for (String topic_id: topic_hierarchy.get(category_id)) {
+					sb.append((String.format("\t> %1$s (%2$s)\n",
+							topics.get(topic_id).prompt,
+							topic_id
+							)));
+			
+					if (question_hierarchy.containsKey(topic_id)) {
+						for (String question_id: question_hierarchy.get(topic_id)) {
+							sb.append((String.format("\t\tL %1$s (%2$s)\n",
+									questions.get(question_id).prompt,
+									question_id
+									)));
+						}
+					}
+				}
+			}
+		} System.out.println(sb.toString());
 	}
 
 	private static String formatShow(String parent_id, String parent_name, ArrayList<String> member_names) {
