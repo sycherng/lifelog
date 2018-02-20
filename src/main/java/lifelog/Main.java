@@ -173,8 +173,31 @@ public class Main {
 	}
 
 	private static void updateOrdinals() {
-		// TODO Auto-generated method stub
-		
+		//LinkedList<String> category_hierarchy (category ids in their own sequence)
+		int c = 1;
+		for (String category_id: category_hierarchy) {
+			Category category = categories.get(category_id);
+			category.ordinal = c;
+			c += 1;
+		} //HashMap<String, LinkedList<String>> topic_hierarchy; (category_ids to topics in their own sequence)
+		for (Map.Entry<String, LinkedList<String>> th_entry: topic_hierarchy.entrySet()) {
+			LinkedList<String> topic_ll = th_entry.getValue();
+			c = 1;
+			for (String topic_id: topic_ll) {
+				Topic topic = topics.get(topic_id);
+				topic.ordinal = c;
+				c += 1;
+			}
+		} //HashMap<String, LinkedList<String>> question_hierarchy; (topic_ids to questions in their own sequence)
+		for (Map.Entry<String, LinkedList<String>> qh_entry: question_hierarchy.entrySet()) {
+			LinkedList<String> question_ll = qh_entry.getValue();
+			c = 1;
+			for (String question_id: question_ll) {
+				AbstractQuestion question = questions.get(question_id);
+				question.ordinal = c;
+				c += 1;
+			}
+		}
 	}
 
 	private static void showAll(Console c) {
