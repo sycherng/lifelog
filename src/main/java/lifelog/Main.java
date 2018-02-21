@@ -50,6 +50,8 @@ public class Main {
 				else if (command.startsWith("move") && (command.length() == 10)) {
 					move(c, command);
 				}
+				else if (command.equals("create")) {
+					createDialogue(c);
 				else if (command.equals("help")) {
 					helpText();
 				} System.out.println("-------------------------");
@@ -350,7 +352,151 @@ public class Main {
 		}
 		System.out.println(sb.toString());
 	}
+	
+	private static void createDialogue(Console c) {
+		System.out.println("(c) create a new category\n(t) create a new topic\n(q) create a new question\n\n(e) exit this menu");
+		String response = c.readLine();
+		while (true) {
+			if (response.equals("c")) {
+				createCategoryDialogue(c);
+			} else if (response.equals("t")) {
+				createTopicDialogue(c);
+			} else if (response.equals("q")) {
+				createQuestionDialogue(c);
+			} else if (response.equals("e")) {
+				System.out.println("Exiting create mode...");
+				return;
+			}
+		}
+	}
 
+	private static void createCategoryDialogue(Console c) {
+		System.out.println("What will be the category's name?");
+		String name = c.readLine();
+		System.out.println(String.format("Make a new category with name \"%1$s\"?\n\n(y) yes\n(s) start over\n(e) exit create mode", name));
+		while (true) {
+			String response = c.readLine();
+			if (response.equals("e")) {
+				System.out.println("Exiting create mode...");
+				return;
+			} else if (response.equals("s")) {
+				createDialogue(c);
+			} else if (response.equals("y")) {
+				createCategory(name);
+			}
+		}
+	}
+
+	private static void createCategory(String name) {
+		String id = createId(Collections.singleton(category_hierarchy));
+		int ordinal = category_hierarchy.size() + 1;
+		Category new_category = new Category(id, ordinal, name);
+		categories.put(id, new_category);
+		category_hierarchy.add(id);
+		System.out.println(String.format("Category %1$s (%2$s) created.", name, id)); 
+		
+	}
+
+	private static void createTopicDialogue(Console c) {
+		System.out.println("What will be the topic's name?");
+		String name = c.readLine();
+		System.out.println("What category will this topic fall under?");
+		StringBuilder sb = new StringBuilder();
+		appendCategories(sb, 0);
+		System.out.println(sb.toString());
+		String category_id = null;
+		while (true) {
+			String response = c.readLine();
+			if (category_hierarchy.contains(response)) {
+				category_id = response;
+				break;
+			} else {
+				System.out.println("Invalid id provided");
+			}
+		}
+		System.out.println(String.format("Make a new topic with name \"%1$s\" under category \"%2$s\"?\n\n(y) yes\n(s) start over\n(e) exit create mode", name, category_id));
+		while (true) {
+			String response = c.readLine();
+			if (response.equals("e")) {
+				System.out.println("Exiting create mode...");
+				return;
+			} else if (response.equals("s")) {
+				createDialogue(c);
+			} else if (response.equals("y")) {
+				createTopic(name, category_id);
+			}
+		}
+	}
+
+	private static void createTopic(String name, String category_id) {
+		String id = createId(topic_hierarchy.values());
+		int ordinal = topic_hierarchy.size() + 1;
+		Topic new_topic = new Topic(id, ordinal, name, category_id);
+		topics.put(id, new_topic);
+		topic_hierarchy.get(category_id).add(id);
+		System.out.println(String.format("Topic %1$s (%2$s) created.", name, id)); 
+		
+	}
+
+	private static void createQuestionDialogue(Console c) {
+		System.out.println("What type of question will it be?\n\n(f) free answer\n(c) multiple choice\n(s) on a numerical scale");
+		String response = c.readLine();
+		//TODO refactor this structure to allow different subdialogues for each question type \\should first gather mutual fields before moving onto specific subdialogues
+		System.out.println("What will be the question's name?");
+		String name = c.readLine();
+		System.out.println("What topic will this question fall under?");
+		StringBuilder sb = new StringBuilder();
+		appendCategories(sb, 0);
+		System.out.println(sb.toString());
+		String topic_id = null;
+		
+		while (true) {
+			response = c.readLine();
+			if (topic_hierarchy.values().contains(response)) {
+				topic_id = response;
+				break;
+			} else {
+				System.out.println("Invalid id provided");
+			}
+		}
+		System.out.println("What type of question will it be?\n\n(f) free answer\n(c) multiple choice\n(s) on a numerical scale");
+		String type;
+		while (true) {
+			response = c.readLine();
+			if (response.equals("f") || response.equals("c") || response.equals("s")) {
+				type = response;
+			}
+		}
+		System.out.println(String.format("Make a new question with name \"%1$s\" under topic \"%2$s\"?\n\n(y) yes\n(s) start over\n(e) exit create mode", name, topic_id));
+		while (true) {
+			response = c.readLine();
+			if (response.equals("e")) {
+				System.out.println("Exiting create mode...");
+				return;
+			} else if (response.equals("s")) {
+				createDialogue(c);
+			} else if (response.equals("y")) {
+				createQuestion(name, topic_id);
+			}
+		}
+	}
+
+	/** @return appropriate id for a new Category, Topic, or Question 
+	 * @param linked list containing Category, Topic, or Question
+	 */
+	private static String createId(Collection<LinkedList<String>> ll_collection) {
+		String max_id = "";
+		for (LinkedList<String> ll: ll_collection) {
+			for (String id: ll) {
+				if (max_id.compareTo(id) < 0) {
+					max_id = id;
+				}
+			}
+		} Integer new_number = Integer.parseInt(max_id.substring(1));
+		String new_id = max_id.substring(0, 1) + new_number.toString();
+		return new_id;
+	}
+	
 	private static void helpText() {
 		// TODO Auto-generated method stub
 		
