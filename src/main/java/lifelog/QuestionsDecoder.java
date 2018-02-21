@@ -17,7 +17,7 @@ public class QuestionsDecoder {
                 String json_string = "";
 
                 try {
-                        json_file = new FileReader("C:\\Users\\latte\\git\\maven-lifelog\\lifelog\\src\\test\\resources\\full_categories_topics_questions_mock.json");
+                        json_file = new FileReader("C:\\Users\\latte\\git\\maven-lifelog\\lifelog\\src\\test\\resources\\categories_topics_questions.json");
 
                         int c;
                         while ((c = json_file.read()) != -1) {

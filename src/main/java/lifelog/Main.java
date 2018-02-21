@@ -22,16 +22,17 @@ public class Main {
 	
 	public static void main (String[] args) throws IOException, ParseException, BadStringOperationException {
 		loadState();
-		Console c = System.console();
+		/*Console c = System.console();
 		if (c == null) {
-			System.err.println("No console.");
+			System.err.println("No console. Shutting down...");
 			System.exit(1);
 		} else {
+			System.out.println("Welcome back to your lifelog.");
 			while (true) {
-				System.out.println("Welcome back to your lifelog.");
 				String command = c.readLine();
 				if (command.equals("quit")) {
 					saveState();
+					System.out.println("Shutting down...");
 					System.exit(1);
 				}
 				else if (command.equals("show all")) {
@@ -46,16 +47,14 @@ public class Main {
 				else if (command.equals("show questions") || command.equals("show q")) {
 					showQuestions();
 				}
-				else if (command.startsWith("move") && (command.length() == 2)) {
+				else if (command.startsWith("move") && (command.length() == 10)) {
 					move(c, command);
 				}
 				else if (command.equals("help")) {
 					helpText();
-				}
+				} System.out.println("-------------------------");
 			}
-		}
-		saveState();
-		System.out.println("Shutting down...");
+		}*/
 	}
 	
 	private static void loadState() throws IOException, ParseException, BadStringOperationException {
@@ -89,7 +88,7 @@ public class Main {
 		Collections.sort(temp_category_hierarchy, new Comparator<Category>() {
 		    @Override
 		    public int compare(Category a, Category b) {
-		        return b.ordinal - a.ordinal;
+		        return a.ordinal - b.ordinal;
 		    }
 		});
 		for (Category e: temp_category_hierarchy) {
@@ -119,7 +118,7 @@ public class Main {
 			Collections.sort(members, new Comparator<Topic>() {
 				@Override
 				public int compare(Topic a, Topic b) {
-					return b.ordinal - a.ordinal;
+					return a.ordinal - b.ordinal;
 				}
 			});
 			LinkedList<String> member_list = new LinkedList<>();
@@ -151,7 +150,7 @@ public class Main {
 			Collections.sort(members, new Comparator<AbstractQuestion>() {
 				@Override
 				public int compare(AbstractQuestion a, AbstractQuestion b) {
-					return b.ordinal - a.ordinal;
+					return a.ordinal - a.ordinal;
 				}
 			});
 			LinkedList<String> member_list = new LinkedList<>();
@@ -166,6 +165,7 @@ public class Main {
 		updateOrdinals();
 		QuestionsEncoder.encodeAll(); //encodes all categories, topics, questions
 		AnswersEncoder.encodeAnswers(); //encodes all answers
+		System.out.println("I may have been successful!");
 	}
 
 	private static void updateOrdinals() {
@@ -297,28 +297,46 @@ public class Main {
 	
 	private static void moveMode(Console c, String target, LinkedList<String> ll) {
 		String response = "";
+		StringBuilder sb = new StringBuilder();
+		String finish_string = "(f) finish and exit move mode";
+		int current_index = ll.indexOf(target);
+
 		while (true) {
 			printTempOrder(ll, target);
-			System.out.println("(u) move up\n(d) move down\n(f) finish and exit move mode");
+			
+			sb.setLength(0);
+			if (current_index != 0) {
+				sb.append("(u) move up\\n");
+			} if (current_index != (ll.size() - 1)) {
+				sb.append("(d) move down\\n");
+			} System.out.println(String.format("%1$s%2$s", sb.toString(), finish_string));
+
 			response = c.readLine();
 
-			if (response == "f") {
+			if (response.equals("f")) {
+				System.out.println(String.format("%1$s moved.", target));
 				return;
-			
 			} else {
-				int initial_index = ll.indexOf(target);
 				int diff = 0;
 				
-				if (response.equals("u")) {
+				if (response.equals("u") && (current_index != 0)) {
 					diff = -1;
-				} else if (response.equals("d")) {
+					swapOrdinal(current_index, diff, ll);
+					current_index += diff;
+				} else if (response.equals("d") && (current_index != ll.size() - 1)) {
 					diff = 1;
+					swapOrdinal(current_index, diff, ll);
+					current_index += diff;
 				}
-				String replacement = ll.get(initial_index + diff);
-				ll.set(initial_index, replacement);
-				ll.set(initial_index + diff, target);
 			}
 		}
+	}
+	
+	private static void swapOrdinal(int current_index, int diff, LinkedList<String> ll) {
+		String target = ll.get(current_index);
+		String replacement = ll.get(current_index + diff);
+		ll.set(current_index, replacement);
+		ll.set(current_index + diff, target);
 	}
 	
 	private static void printTempOrder(LinkedList<String> ll, String target) {
