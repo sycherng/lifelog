@@ -13,6 +13,12 @@ public class ScaleQuestion extends CriteriaQuestion{
                 this.range = new Range(range_start, range_stop, range_step);
                 this.legend = legend;
         }
+        
+        public ScaleQuestion(String id, int ordinal, String prompt, String topic_id, int critical_low, int critical_high, int critical_variance, int critical_duration, Range range, String legend) {
+            super(id, ordinal, prompt, topic_id, "Scale", critical_low, critical_high, critical_variance, critical_duration);
+            this.range = range;
+            this.legend = legend;
+    }
 
 	    @SuppressWarnings("unchecked") //Unchecked cast from map.get("range") to HashMap<String, Integer> for JSON parsing of Range objects.
 		public static ScaleQuestion makeFromMap(String id, JSONObject map) {
@@ -59,21 +65,4 @@ public class ScaleQuestion extends CriteriaQuestion{
                 question_details.put("range", range_details);
                 return question_details;
         }
-        
-        @SuppressWarnings("unused")
-        private class Range{
-        		public int start;
-        		public int stop;
-				public int step;
-
-	    public Range(int start, int stop, int step) {
-	            this.start = start;
-	            this.stop = stop;
-	            this.step = step;
-	    }
-
-		private boolean contains(int number) {
-	            return (number >= start && number < stop);
-	    }
-    }
 }
