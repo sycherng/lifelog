@@ -9,6 +9,9 @@ import java.util.stream.Stream;
 import javax.management.BadStringOperationException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+
+import lifelog.ChoiceQuestion.Option;
+
 import java.time.LocalDate;
 
 public class Main {
@@ -372,8 +375,8 @@ public class Main {
 
 	private static void createCategoryDialogue(Console c) {
 		System.out.println("What will be the category's name?");
-		String name = c.readLine();
-		System.out.println(String.format("Make a new category with name \"%1$s\"?\n\n(y) yes\n(s) start over\n(e) exit create mode", name));
+		String prompt = c.readLine();
+		System.out.println(String.format("Make a new category with name \"%1$s\"?\n\n(y) yes\n(s) start over\n(e) exit create mode", prompt));
 		while (true) {
 			String response = c.readLine();
 			if (response.equals("e")) {
@@ -382,24 +385,25 @@ public class Main {
 			} else if (response.equals("s")) {
 				createDialogue(c);
 			} else if (response.equals("y")) {
-				createCategory(name);
+				createCategory(prompt);
 			}
 		}
 	}
 
-	private static void createCategory(String name) {
-		String id = createId(Collections.singleton(category_hierarchy));
-		int ordinal = category_hierarchy.size() + 1;
-		Category new_category = new Category(id, ordinal, name);
-		categories.put(id, new_category);
-		category_hierarchy.add(id);
-		System.out.println(String.format("Category %1$s (%2$s) created.", name, id)); 
-		
+	private static void createCategory(String prompt) {
+		String id = getNextId(Collections.singleton(category_hierarchy));
+		if (id != null) {
+			int ordinal = category_hierarchy.size() + 1;
+			Category new_category = new Category(id, ordinal, prompt);
+			categories.put(id, new_category);
+			category_hierarchy.add(id);
+			System.out.println(String.format("Category %1$s (%2$s) created.", prompt, id)); 
+		}
 	}
 
 	private static void createTopicDialogue(Console c) {
 		System.out.println("What will be the topic's name?");
-		String name = c.readLine();
+		String prompt = c.readLine();
 		System.out.println("What category will this topic fall under?");
 		StringBuilder sb = new StringBuilder();
 		appendCategories(sb, 0);
@@ -414,7 +418,7 @@ public class Main {
 				System.out.println("Invalid id provided");
 			}
 		}
-		System.out.println(String.format("Make a new topic with name \"%1$s\" under category \"%2$s\"?\n\n(y) yes\n(s) start over\n(e) exit create mode", name, category_id));
+		System.out.println(String.format("Make a new topic with name \"%1$s\" under category \"%2$s\"?\n\n(y) yes\n(s) start over\n(e) exit create mode", prompt, category_id));
 		while (true) {
 			String response = c.readLine();
 			if (response.equals("e")) {
@@ -423,68 +427,214 @@ public class Main {
 			} else if (response.equals("s")) {
 				createDialogue(c);
 			} else if (response.equals("y")) {
-				createTopic(name, category_id);
+				createTopic(prompt, category_id);
 			}
 		}
 	}
 
-	private static void createTopic(String name, String category_id) {
-		String id = createId(topic_hierarchy.values());
-		int ordinal = topic_hierarchy.size() + 1;
-		Topic new_topic = new Topic(id, ordinal, name, category_id);
-		topics.put(id, new_topic);
-		topic_hierarchy.get(category_id).add(id);
-		System.out.println(String.format("Topic %1$s (%2$s) created.", name, id)); 
-		
+	private static void createTopic(String prompt, String category_id) {
+		String id = getNextId(topic_hierarchy.values());
+		if (id != null) {
+			int ordinal = topic_hierarchy.size() + 1;
+			Topic new_topic = new Topic(id, ordinal, prompt, category_id);
+			topics.put(id, new_topic);
+			topic_hierarchy.get(category_id).add(id);
+			System.out.println(String.format("Topic %1$s (%2$s) created.", prompt, id)); 
+		}
 	}
 
 	private static void createQuestionDialogue(Console c) {
-		System.out.println("What type of question will it be?\n\n(f) free answer\n(c) multiple choice\n(s) on a numerical scale");
-		String response = c.readLine();
-		//TODO refactor this structure to allow different subdialogues for each question type \\should first gather mutual fields before moving onto specific subdialogues
-		System.out.println("What will be the question's name?");
-		String name = c.readLine();
-		System.out.println("What topic will this question fall under?");
-		StringBuilder sb = new StringBuilder();
-		appendCategories(sb, 0);
-		System.out.println(sb.toString());
-		String topic_id = null;
-		
-		while (true) {
-			response = c.readLine();
-			if (topic_hierarchy.values().contains(response)) {
-				topic_id = response;
-				break;
-			} else {
-				System.out.println("Invalid id provided");
-			}
-		}
+		String response;
 		System.out.println("What type of question will it be?\n\n(f) free answer\n(c) multiple choice\n(s) on a numerical scale");
 		String type;
 		while (true) {
 			response = c.readLine();
-			if (response.equals("f") || response.equals("c") || response.equals("s")) {
-				type = response;
+			if (response.equals("f")) {
+				type = "f";
+				break;
+			} else if (response.equals("c")) {
+				type = "c";
+				break;
+			} else if (response.equals("s")) {
+				type = "s";
+				break;
 			}
 		}
-		System.out.println(String.format("Make a new question with name \"%1$s\" under topic \"%2$s\"?\n\n(y) yes\n(s) start over\n(e) exit create mode", name, topic_id));
+		System.out.println("What will be the prompt?");
+		String prompt = c.readLine();
+
+		String topic_id;
+		System.out.println("Which topic will this question fall under?");
+		StringBuilder sb = new StringBuilder();
+		appendCategories(sb, 0);
+		System.out.println(sb.toString());
 		while (true) {
 			response = c.readLine();
-			if (response.equals("e")) {
+			LinkedList<String> ll = question_hierarchy.get(response);
+			if (ll == null) {
+				System.out.println("Invalid id provided");
+			} else {
+				topic_id = response;
+				break;
+			}
+		}
+		
+		String id = getNextId(question_hierarchy.values());
+		if (id != null) {
+			int ordinal = question_hierarchy.get(topic_id).size() + 1;
+			
+			if (type.equals("f")) {
+				createFreeQuestionDialogue(c, type, id, ordinal, prompt, topic_id);
+			} else if (type.equals("c")) {
+				createChoiceQuestionDialogue(c, type, id, ordinal, prompt, topic_id);
+			} else {
+				createScaleQuestionDialogue(c, type, id, ordinal, prompt, topic_id);
+			}
+		} 
+	}
+
+	private static void createFreeQuestionDialogue(Console c, String type, String prompt, int ordinal, String topic_id, String id) {
+		System.out.println("How many are allowed with each entry?");
+		String response;
+		int num_of_answers = 0;
+		boolean success = false;
+		while (true) {
+			response = c.readLine();
+			try {
+				num_of_answers = Integer.parseInt(response);
+				success = true;
+			} catch(Exception NumberFormatException) {
+				System.out.println("Please enter a number only.");
+			} finally {
+				if (success) {
+					break;
+				}
+			}
+		}
+		boolean confirm_question = confirmQuestion(c, String.format("id = %1$s\nprompt= %2$s\nnumber of answers = %3$s\nunder topic:%4$s", id, prompt, num_of_answers, topic_id));
+		if (confirm_question) {
+			FreeQuestion new_object = new FreeQuestion(id, ordinal, prompt, topic_id, num_of_answers);
+			questions.put(topic_id, new_object);
+			question_hierarchy.get(topic_id).add(id);
+		}		
+	}
+
+	private static boolean confirmQuestion(Console c, String details) {
+		String response;
+		while (true) {
+			response = c.readLine("Create a new question with\n%1$s?\n\n(y) yes\n(s) start over\n(e) exit", details);
+			if (response.equals("y")) {
+				return true;
+			} else if (response.equals("e")) {
 				System.out.println("Exiting create mode...");
-				return;
+				return false;
 			} else if (response.equals("s")) {
 				createDialogue(c);
-			} else if (response.equals("y")) {
-				createQuestion(name, topic_id);
+			}
+		}
+	}
+	
+	private static void createChoiceQuestionDialogue(Console c, String type, String prompt, int ordinal, String topic_id, String id) {
+		//ChoiceQuestion(String id, int ordinal, String prompt, String topic_id, int critical_low, int critical_high, int critical_variance, int critical_duration, HashMap<String, Option> options_map)
+		HashMap<String, Option> options_map = createAllOptions(c);
+		
+		int critical_low = getIntResponse(c);
+		int critical_high = getIntResponse(c);
+		int critical_variance = getIntResponse(c);
+		int critical_duration = getIntResponse(c);
+		
+		StringBuilder sb = new StringBuilder();
+		for (Option option: options_map.values()) {
+			sb.append(String.format("%1$s - %2$s (%3$s)\n", option.abbreviation, option.full, option.weight));
+		}
+		boolean confirm_question = confirmQuestion(c, String.format(
+				"id = %1$s\nprompt= %2$s\nlow = %3$s high = %4$s variance = %5$s duration = %6$s\n\nWith options %7$s\nunder topic:%8$s", 
+				id,	prompt, critical_low, critical_high, critical_variance, critical_duration, sb.toString(), topic_id
+				));
+		if (confirm_question) {
+			ChoiceQuestion new_object = new ChoiceQuestion(id, ordinal, prompt, topic_id, critical_low, critical_high, critical_variance, critical_duration, options_map);
+			questions.put(topic_id, new_object);
+			question_hierarchy.get(topic_id).add(id);
+		}
+	}
+	
+	private static HashMap<String, Option> createAllOptions(Console c) {
+		HashMap<String, Option> result = new HashMap<>();
+		while (true) {
+			Option option = createOneOption(c);
+			if (option != null) {
+				result.put(Character.toString(option.abbreviation), option);
+			}
+			//confirm if add more
+			System.out.println("Add more options?\n\n(y) yes\n(n) no");
+			String response = c.readLine();
+			if (response.equals("y")) {
+				continue;
+			} else if (response.equals("n")) {
+				return result;
+			} else {
+				return result;
+			}
+		}
+	}
+	private static Option createOneOption(Console c) {
+		String response;
+		while (true) {
+			//Option(char abbreviation, String full, int weight)
+			System.out.println("Creating new option...\nWhat is this option's prompt?");
+			String option_prompt = c.readLine();
+			System.out.println("What is the option's abbreviation? (Please enter a single letter that is not x).");
+			String option_abbreviation = "";
+			while (true) {
+				response = c.readLine();
+				if ((response != "x") && response.length() == 1) {
+					option_abbreviation = response;
+					break;
+				}
+			}
+			System.out.println("What is the option's weight?");
+			int option_weight = getIntResponse(c);
+			 
+			System.out.println(String.format("Create the following option?\nprompt = \"%1$s\"\nabbreviation = %2$s\nweight=%3$s\n\n(y) yes\n(s) start over\n(e) exit", option_prompt, option_abbreviation, option_weight));
+			while (true) {
+				response = c.readLine();
+				if (response.equals("y")) {
+					return new Option(option_abbreviation.charAt(0), option_prompt, option_weight);
+				} else if (response.equals("s")) {
+					createDialogue(c);
+					break;
+				} else if (response.equals("e")) {
+					System.out.println("Exiting create mode...");
+					break;
+				}
+			} 
+			return null;
+		}
+	}
+	
+	
+	private static int getIntResponse(Console c) {
+		int answer;
+		while (true) {
+			String response = c.readLine();
+			try {
+				answer = Integer.parseInt(response);
+				return answer;
+			} catch(Exception NumberFormatException) {
+				System.out.println("Please enter a number.");
 			}
 		}
 	}
 
-	/** @return appropriate id for a new Category, Topic, or Question 
-	 * @param linked list containing Category, Topic, or Question
+	private static void createScaleQuestionDialogue(Console c, String type, String prompt, int ordinal, String topic_id, String id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/** @return appropriate id for a new SurveyItem
+	 * @param collection of linked lists containing all ids of that SurveyItem type
 	 */
-	private static String createId(Collection<LinkedList<String>> ll_collection) {
+	private static String getNextId(Collection<LinkedList<String>> ll_collection) {
 		String max_id = "";
 		for (LinkedList<String> ll: ll_collection) {
 			for (String id: ll) {
@@ -493,8 +643,14 @@ public class Main {
 				}
 			}
 		} Integer new_number = Integer.parseInt(max_id.substring(1));
-		String new_id = max_id.substring(0, 1) + new_number.toString();
-		return new_id;
+		int length = (int)(Math.log(new_number) + 1);
+		if (length > 4) {
+			System.out.println("Maximum number of this element reached.");
+			return null;
+		} else {
+			String new_id = max_id.substring(0, (5 - length)) + new_number.toString();
+			return new_id;
+		}
 	}
 	
 	private static void helpText() {
