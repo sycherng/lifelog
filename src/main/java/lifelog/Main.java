@@ -51,6 +51,9 @@ public class Main {
 				else if (command.startsWith("move") && (command.length() == 10)) {
 					move(c, command);
 				}
+				else if (command.startsWith("reassign parent") && (command.length() == 21)) {
+					reassignParentDialogue(c, command);
+				}
 				else if (command.equals("create")) {
 					createDialogue(c);
 				else if (command.equals("help")) {
@@ -270,38 +273,41 @@ public class Main {
 	}
 	
 	private static void move(Console c, String message) {
-		Boolean contains = false;
 		String target = message.split(" ")[1];
-		HashMap<String, LinkedList<String>> target_list = null;
-		char initial = target.charAt(0);
-		if ((initial == 'c') && (category_hierarchy.contains(target))) {
-				contains = true;
-				moveMode(c, target, category_hierarchy);
+		//validate the id provided
+		LinkedList<String> peers = returnPeerLinkedList(target);
+		//feed the id to actual action area
+		if (peers != null) {
+			moveMode(c, target, peers);
+		}
+	}
+	
+	private static LinkedList<String> returnPeerLinkedList(String id) {
+		HashMap<String, LinkedList<String>> id_list = null;
+		char initial = id.charAt(0);
+		if ((initial == 'c') && (category_hierarchy.contains(id))) {
+			return category_hierarchy;
 		} else if (initial == 't') {
-			target_list = topic_hierarchy;
+			id_list = topic_hierarchy;
 		} else if (initial == 'q') {
-			target_list = question_hierarchy; 
-		}
-		
-		if (target_list != null) {
-			for (Map.Entry<String, LinkedList<String>> e: target_list.entrySet()) {
+			id_list = question_hierarchy;
+		} if (id_list != null) { 
+			  for (Map.Entry<String, LinkedList<String>> e: id_list.entrySet()) {
 				LinkedList<String> ll = e.getValue();
-				if (ll.contains(target)) {
-					contains = true;
-					moveMode(c, target, ll);
+				if (ll.contains(id)) {
+					return ll;
 				}
-			} 
-		}
-		
-		if (contains == false) {
+			  } 
+		} else {
 			print("Invalid id provided.");
+			return null;
 		}
 	}
 	
 	private static void moveMode(Console c, String target, LinkedList<String> ll) {
 		String response = "";
 		StringBuilder sb = new StringBuilder();
-		String finish_string = "(f) finish and exit move mode";
+		String finish_string = "(e) finish and exit move mode";
 		int current_index = ll.indexOf(target);
 
 		while (true) {
@@ -316,8 +322,8 @@ public class Main {
 
 			response = c.readLine();
 
-			if (response.equals("f")) {
-				print(String.format("%1$s moved.", target));
+			if (response.equals("e")) {
+				print(String.format("Exiting move mode...", target));
 				return;
 			} else {
 				int diff = 0;
@@ -335,13 +341,6 @@ public class Main {
 		}
 	}
 	
-	private static void swapOrdinal(int current_index, int diff, LinkedList<String> ll) {
-		String target = ll.get(current_index);
-		String replacement = ll.get(current_index + diff);
-		ll.set(current_index, replacement);
-		ll.set(current_index + diff, target);
-	}
-	
 	private static void printTempOrder(LinkedList<String> ll, String target) {
 		StringBuilder sb = new StringBuilder();
 		for (String s: ll) {
@@ -354,6 +353,61 @@ public class Main {
 		print(sb.toString());
 	}
 	
+	private static void swapOrdinal(int current_index, int diff, LinkedList<String> ll) {
+		String target = ll.get(current_index);
+		String replacement = ll.get(current_index + diff);
+		ll.set(current_index, replacement);
+		ll.set(current_index + diff, target);
+	}
+	
+	private static void reassignParentDialogue(Console c, String message) {
+		String target = message.split(" ")[2];
+		//validate the id provided
+		HashMap<String, LinkedList<String>> target_hierarchy_map = returnHierarchyMap(c, target);
+		if (target_hierarchy_map != null) {
+			String type = target.substring(0, 1);
+			String response = c.readLine(
+					"%1$s currently belongs under %2$s.\nProvide the id of its new parent, or respond with \"(e)\" to exit parent reassigning mode.", 
+					target, 
+					target_hierarchy_map.get(target));
+			while (true) {
+				if (response.equals("e")) {
+					print("Exiting parent reassigning mode...");
+					return;
+				}
+				if (type.equals("t")) {
+					if (response.startsWith("c")) {
+						//TODO
+					} else {
+						print("Please supply a category id.");
+					}
+				} else if (type.equals("q")) {
+					if (response.startsWith("t")) {
+						//TODO
+					} else {
+						print("Please supply a topic id.");
+					}
+				}
+			}
+		} 	
+	}
+	
+	private static void reassignParent(Console c, String target, HashMap<String<LinkedList<String>>>)
+	
+	private static HashMap<String, LinkedList<String>> returnHierarchyMap(Console c, String target) {
+		if (target.startsWith("c")) {
+			print("Topic or question id required. Categories have no parents.");
+			return null;
+		} else if (target.startsWith("t")) {
+			return topic_hierarchy;
+		} else if (target.startsWith("q")) {
+			return question_hierarchy;
+		} else {
+			print("Invalid id provided.");
+			return null;
+		}
+	}
+
 	private static void createDialogue(Console c) {
 		print("(c) create a new category\n(t) create a new topic\n(q) create a new question\n\n(e) exit this menu");
 		String response = c.readLine();
