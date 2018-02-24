@@ -202,6 +202,62 @@ public class Main {
 		}
 	}
 
+	private static boolean idExists(String id) {
+		if (id.startsWith("c")) {
+			return categories.containsKey(id);
+		} else if (id.startsWith("t")) {
+			return topics.containsKey(id);
+		} else if (id.startsWith("q")) {
+			return questions.containsKey(id);
+		}
+	}
+	
+	private static boolean isParent(String parent_id, String child_id) {
+		if (child_id.startsWith("c")) {
+			return false;
+		} else if (child_id.startsWith("t")) {
+			return parent_id.equals(topics.get(child_id).category_id);
+		} else if (child_id.startsWith("q")) {
+			return parent_id.equals(questions.get(child_id).topic_id);
+		} else {
+			return false;
+		}
+	}
+	
+	private static boolean isChild(String child_id, String parent_id) {
+		return isParent(parent_id, child_id);
+	}
+	
+	private static String findParentId(String child_id) {
+		if (child_id.startsWith("c")) {
+			return null;
+		} else if (child_id.startsWith("t")) {
+			return topics.get(child_id).category_id;
+		} else if (child_id.startsWith("q")) {
+			return questions.get(child_id).topic_id;
+		}
+	}
+	
+	private static LinkedList<String> findChildIds(String parent_id) {
+		if (parent_id.startsWith("c")) {
+			return topic_hierarchy.get(parent_id);
+		} else if (parent_id.startsWith("t")) {
+			return question_hierarchy.get(parent_id);
+		} else {
+			return null;
+		}
+	}
+	
+	private static HashMap<String, LinkedList<String>> findHierarchyMap(Console c, String target) {
+		if (target.startsWith("t")) {
+			return topic_hierarchy;
+		} else if (target.startsWith("q")) {
+			return question_hierarchy;
+		} else {
+			return null;
+		}
+	}
+	
 	private static void showAll() {
 		StringBuilder sb = new StringBuilder();
 		appendCategories(sb, 2);
@@ -361,52 +417,41 @@ public class Main {
 	}
 	
 	private static void reassignParentDialogue(Console c, String message) {
-		String target = message.split(" ")[2];
-		//validate the id provided
-		HashMap<String, LinkedList<String>> target_hierarchy_map = returnHierarchyMap(c, target);
-		if (target_hierarchy_map != null) {
-			String type = target.substring(0, 1);
-			String response = c.readLine(
-					"%1$s currently belongs under %2$s.\nProvide the id of its new parent, or respond with \"(e)\" to exit parent reassigning mode.", 
-					target, 
-					target_hierarchy_map.get(target));
-			while (true) {
-				if (response.equals("e")) {
-					print("Exiting parent reassigning mode...");
-					return;
-				}
-				if (type.equals("t")) {
-					if (response.startsWith("c")) {
-						//TODO
-					} else {
-						print("Please supply a category id.");
-					}
-				} else if (type.equals("q")) {
-					if (response.startsWith("t")) {
-						//TODO
-					} else {
-						print("Please supply a topic id.");
-					}
-				}
+		String target_id = message.split(" ")[2];
+		HashMap<String, LinkedList<String>> target_hierarchy_map = findHierarchyMap(c, target_id);
+		if (target_hierarchy_map == null) {
+			System.out.println("Invalid id supplied.");
+			return;
+		} String parent_id = findParentId(target_id);
+		if (parent_id == null) {
+			System.out.println("Invalid id supplied.");
+			return;
+		}
+		String type_initial = target_id.substring(0, 1);
+		String response = c.readLine(
+				"%1$s currently belongs under %2$s.\nProvide the id of its new parent, or respond with \"(e)\" to exit parent reassigning mode.", 
+				target_id,
+				parent_id);
+		while (true) {
+			if (response.equals("e")) {
+				print("Exiting parent reassigning mode...");
+				return;
+			} else if (idExists(response)) {
+				String new_parent_id = response;
+				reassignParent(target_id, parent_id, new_parent_id, target_hierarchy_map);
+			} else {
+				print("Invalid parent id supplied.");
 			}
 		} 	
 	}
-	
+
+	private static void reassignParent(String child_to_move, String desired_parent, String new_parent_id, HashMap<String, LinkedList<String>> hierarchy_map) {
+		hierarchy_map.get()
+	}
+
 	private static void reassignParent(Console c, String target, HashMap<String<LinkedList<String>>>)
 	
-	private static HashMap<String, LinkedList<String>> returnHierarchyMap(Console c, String target) {
-		if (target.startsWith("c")) {
-			print("Topic or question id required. Categories have no parents.");
-			return null;
-		} else if (target.startsWith("t")) {
-			return topic_hierarchy;
-		} else if (target.startsWith("q")) {
-			return question_hierarchy;
-		} else {
-			print("Invalid id provided.");
-			return null;
-		}
-	}
+
 
 	private static void createDialogue(Console c) {
 		print("(c) create a new category\n(t) create a new topic\n(q) create a new question\n\n(e) exit this menu");
@@ -449,6 +494,7 @@ public class Main {
 			Category new_category = new Category(id, ordinal, prompt);
 			categories.put(id, new_category);
 			category_hierarchy.add(id);
+			topic_hierarchy.put(id, new LinkedList<String>());
 			print(String.format("Category %1$s (%2$s) created.", prompt, id)); 
 		}
 	}
@@ -491,6 +537,7 @@ public class Main {
 			Topic new_topic = new Topic(id, ordinal, prompt, category_id);
 			topics.put(id, new_topic);
 			topic_hierarchy.get(category_id).add(id);
+			question_hierarchy.put(id, new LinkedList<String>());
 			print(String.format("Topic %1$s (%2$s) created.", prompt, id)); 
 		}
 	}
@@ -792,26 +839,3 @@ public class Main {
 //		//unimplemented
 //		//answer = new question_template.createAnswerInstance()
 //	}
-//
-///* Adding a new question
-// * 1. createNewQuestion literally all strings (question_id, class_type, other_params...) -> AbstractQuestion
-// * 2. serialize the AbstractQuestion and add to the questions json
-// */
-//	/** Checks for the largest question_id in all_questions,
-//	 * string-builds and returns the next logical question_id.
-//	 */
-//	public String makeNextQuestionId() {
-//		//unimplemented
-//		//this.all_questions
-//	}
-//
-//	/** call constructor for a leaf Question object based on question_type,
-//	 * use getNextQuestionId() to create the new Question object's id,
-//	 * unroll args and processes them to fulfill required attributes for constructor,
-//	 * adds the newly created Question object to all_questions hashmap
-//	 */
-//	public void createQuestion() {
-//		//unimplemented
-//		//this.all_questions
-//	}
-//}
