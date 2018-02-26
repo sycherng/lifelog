@@ -41,43 +41,42 @@ public class DeleteUtils {
 				deleteQuestion(id);
 			} 
 		} else {
-			print("Onvalid id provided");
-		}
-		
+			print("Invalid id provided");
+		}	
 	}
-
-	private static void deleteCategory(String id_to_delete) { //TODO redo based on deleteTopic()
-		/* cannot delete ccccc, ttttt unless empty
-		 * To delete a category
-		 * make a new category ccccc "Unassigned" if not exists (Main.categories AND Main.category_hierarchy)
-		 * dump all content topics in there, reassign all content Topics' category_id to ccccc
-		 * remove category from Main.categories and category_hierarchy
-		 * 
+	
+	private static void deleteCategory(String id_to_delete) { //DONE, UNTESTED
+		/* ccccc may only be deleted if it is empty
+		 * if CategoryUnassigned doesnt exist yet, create it
+		 * update main.categories, main.category_hierarchy, main.topics_hierarchy
+		 * update all child Topics' category_id to category_unassigned_id
 		 */
 		if (id_to_delete.equals(CATEGORY_UNASSIGNED_ID) && !(Main.category_hierarchy.isEmpty())) {
-			print("Cannot delete category \"Unassigned Topics\". It is automatically deleted when it becomes empty.");
+			print(String.format("%1$s auto-deletes when empty.", CATEGORY_UNASSIGNED_NAME));
 		} else {
-			Category unassigned_category = new Category(CATEGORY_UNASSIGNED_ID, UNASSIGNED_ORDINAL, CATEGORY_UNASSIGNED_NAME);
-			Main.categories.put(unassigned_category.id, unassigned_category);
+			if (Utils.idExists(CATEGORY_UNASSIGNED_ID) == false) {
+				spawnCategoryUnassigned();
+			}
 			Main.categories.remove(id_to_delete);
-			LinkedList<String> unassigned_topic_ids = Main.topic_hierarchy.get(id_to_delete);
+			Main.category_hierarchy.remove(id_to_delete);
+			LinkedList<String> topic_ids = Main.topic_hierarchy.get(id_to_delete);
 			Main.topic_hierarchy.remove(id_to_delete);
-			Main.topic_hierarchy.put(unassigned_category.id, unassigned_topic_ids);
-			for (String topic_id: unassigned_topic_ids) {
-				Main.topics.get(topic_id).category_id = unassigned_category.id;
+			Main.topic_hierarchy.get(CATEGORY_UNASSIGNED_ID).addAll(topic_ids);
+			for (String topic_id: topic_ids) {
+				Main.topics.get(topic_id).category_id = CATEGORY_UNASSIGNED_ID;
 			}
 		}
 	}
 
-	private static void deleteTopic(String id_to_delete) { //DONE
+	private static void deleteTopic(String id_to_delete) { //DONE, UNTESTED
 		/* ttttt may only be deleted if it is empty
 		 * if TopicUnassigned doesnt exist yet, create it
 		 * update main.topics, main.topics_hierarchy, main.questions_hierarchy
-		 * update all child Question's topic_id to unassigned topic id
+		 * update all child Questions' topic_id to topic_unassigned_id
 		 * Delete ccccc if now empty
 		 */
 		if (id_to_delete.equals(TOPIC_UNASSIGNED_ID) && !(Utils.idExists(CATEGORY_UNASSIGNED_ID))) {
-			print(String.format("%1$s auto-deletes when empty", TOPIC_UNASSIGNED_NAME));
+			print(String.format("%1$s auto-deletes when empty.", TOPIC_UNASSIGNED_NAME));
 		} else {
 			if (Utils.idExists(TOPIC_UNASSIGNED_ID) == false) {
 				spawnTopicUnassigned();
@@ -97,9 +96,19 @@ public class DeleteUtils {
 		}		
 	}
 
-	private static void deleteQuestion(String id_to_delete) { //TODO
-		// if parent is ttttt and this makes its parent empty, delete ttttt
+	private static void deleteQuestion(String id_to_delete) { //DONE, UNTESTED
+		/* update main.questions, main.questions_hierarchy
+		 * Delete ttttt if now empty
+		 */	
+		String topic_id = Main.questions.get(id_to_delete).topic_id;
+		Main.questions.remove(id_to_delete);
+		Main.question_hierarchy.remove(topic_id);
+
+		print(String.format("%1$s deleted.", id_to_delete));
 		
+		if ((Utils.idExists(TOPIC_UNASSIGNED_ID)) && (Utils.findChildIds(TOPIC_UNASSIGNED_ID) == null)) {
+			deleteCategory(TOPIC_UNASSIGNED_ID);
+		}		
 	}
 	
 	private static void spawnCategoryUnassigned() {
@@ -111,6 +120,7 @@ public class DeleteUtils {
 		Main.category_hierarchy.add(category_unassigned.id);
 		Main.topic_hierarchy.put(category_unassigned.id, new LinkedList<String>());
 	}
+	
 	private static void spawnTopicUnassigned() {
 		/* if the category doesnt exist yet, make the category
 		 * make the new topic
