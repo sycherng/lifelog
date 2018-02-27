@@ -20,14 +20,6 @@ public class FreeQuestion extends AbstractQuestion {
                 return new FreeQuestion(id, ordinal, prompt, topic_id, num_of_answers);
         }
 
-        /** Called when user submits a fully answered response to a template FreeQuestion
-         * instantiates a copy of an FreeQuestion with date and answer fields.
-         */
-        public AbstractQuestion createAnswerInstance(LocalDate date, String[] args) {
-                //Unimplemented
-                return null;
-        }
-
         /** Returns the JSON string that this instance should serialize to.
          * For answered instances only.
          */

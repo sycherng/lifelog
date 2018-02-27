@@ -4,11 +4,12 @@ import static lifelog.Utils.print;
 import java.io.Console;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class CreateUtils{
+public class CreateQuestionUtils{
 	private static void createDialogue(Console c) {
 		print("(c) create a new category\n(t) create a new topic\n(q) create a new question\n\n(e) exit this menu");
 		String response = c.readLine();
@@ -199,7 +200,7 @@ public class CreateUtils{
 		print("You have assigned weights for each option. ");
 		ArrayList<Integer> criteria = getCriteria(c);
 		
-		String options_string = showOptions(options_map);
+		String options_string = Option.makeOptionsString((Collection<Option>) options_map.values());
 		boolean confirm_question = confirmQuestion(c, String.format(
 				"id = %1$s\nprompt= %2$s\nlow = %3$s high = %4$s variance = %5$s duration = %6$s\n\nWith options %7$s\nunder topic:%8$s", 
 				id,	
@@ -216,13 +217,6 @@ public class CreateUtils{
 			Main.questions.put(topic_id, choice_question);
 			Main.question_hierarchy.get(topic_id).add(id);
 		} //else is handled by confirm_question()
-	}
-	
-	private static String showOptions(HashMap<String, Option> options_map) {
-		StringBuilder sb = new StringBuilder();
-		for (Option option: options_map.values()) {
-			sb.append(String.format("%1$s - %2$s (%3$s)\n", option.abbreviation, option.full, option.weight));
-		} return sb.toString();
 	}
 	
 	private static HashMap<String, Option> createAllOptions(Console c) {

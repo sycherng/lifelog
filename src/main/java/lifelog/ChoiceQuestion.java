@@ -48,14 +48,6 @@ public class ChoiceQuestion extends CriteriaQuestion{
                 return results;
         }
 
-        /** Called when user submits a fully answered response to a template ChoiceQuestion
-         * instantiates a copy of an ChoiceQuestion with date and answer fields.
-         */
-        public AbstractQuestion createAnswerInstance(LocalDate date, String[] args) {
-                //Unimplemented
-                return null;
-        }
-
         /** Returns the JSON string that this instance should serialize to.
          * For answered instances only.
          */

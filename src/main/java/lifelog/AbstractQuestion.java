@@ -1,5 +1,4 @@
 package lifelog;
-import java.time.LocalDate;
 
 public abstract class AbstractQuestion extends SurveyItem implements Question {
     public String id;
@@ -15,9 +14,4 @@ public abstract class AbstractQuestion extends SurveyItem implements Question {
 	    this.topic_id = topic_id;
 	    this.type = type;
     }
-
-    /** Called when user submits a fully answered response to a template question
-     * instantiates a copy of an AbstractQuestion with date and answer fields.
-     */
-    public abstract AbstractQuestion createAnswerInstance(LocalDate date, String[] args);
 }       

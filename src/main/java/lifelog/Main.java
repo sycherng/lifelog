@@ -32,6 +32,8 @@ public class Main {
 					saveState();
 					print("Shutting down...");
 					System.exit(1);
+				} else if (command.equals("log")) {
+					CreateAnswerUtils.log(c);
 				} else if (command.equals("show all")) {
 					ShowUtils.showAll();
 				} else if (command.equals("show categories") || command.equals("show c")) {
@@ -45,13 +47,13 @@ public class Main {
 				} else if (command.startsWith("reassign parent") && (command.length() == 21)) {
 					ReassignParentUtils.reassignParentDialogue(c, command);
 				} else if (command.equals("create")) {
-					CreateUtils.createDialogue(c);
+					CreateQuestionUtils.createDialogue(c);
 				} else if (command.equals("delete")) {
 					DeleteUtils.deleteDialogue(c);
 				} else if (command.startsWith("delete") && (command.length() == 12)) {
 					DeleteUtils.deleteIdDialogue(command.split()[1]);
 				} else if (command.equals("help")) {
-					Utils.helpText();
+					ShowUtils.helpText();
 				} print("-------------------------");
 			}
 		}*/

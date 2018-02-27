@@ -37,14 +37,6 @@ public class ScaleQuestion extends CriteriaQuestion{
 				return new ScaleQuestion(id, ordinal, prompt, topic_id, critical_low, critical_high, critical_variance, critical_duration, range_start, range_stop, range_step, legend);
 		        }
 
-        /** Called when user submits a fully answered response to a template ScaleQuestion
-         * instantiates a copy of an ScaleQuestion with date and answer fields.
-         */
-        public AbstractQuestion createAnswerInstance(LocalDate date, String[] args) {
-			return null;
-                //Unimplemented
-        }
-
         @SuppressWarnings("unchecked")
 		public JSONObject templateToJSONObject() {
                 JSONObject question_details = new JSONObject();

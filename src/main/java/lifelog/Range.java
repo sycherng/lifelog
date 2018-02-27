@@ -11,8 +11,7 @@ public class Range{
             this.step = step;
     }
 
-	@SuppressWarnings("unused")
-	private boolean contains(int number) {
+	public boolean contains(int number) {
             return (number >= start && number < stop);
     }
 
