@@ -20,7 +20,7 @@ public class AnswersDecoder {
 				String json_string = "";
 				
 				try {
-					json_file = new FileReader("C:\\Users\\latte\\git\\maven-lifelog\\lifelog\\src\\test\\resources\\answers.json");
+					json_file = new FileReader("/home/ec2-user/ll/src/test/resources/answers.json");
 
 					int c;
 					while ((c = json_file.read()) != -1) {

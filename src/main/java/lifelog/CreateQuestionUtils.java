@@ -16,10 +16,13 @@ public class CreateQuestionUtils{
 		while (true) {
 			if (response.equals("c")) {
 				createCategoryDialogue(c);
+				return;
 			} else if (response.equals("t")) {
 				createTopicDialogue(c);
+				return;
 			} else if (response.equals("q")) {
 				createQuestionDialogue(c);
+				return;
 			} else if (response.equals("e")) {
 				print("Exiting create mode...");
 				return;
@@ -40,6 +43,7 @@ public class CreateQuestionUtils{
 				createDialogue(c);
 			} else if (response.equals("y")) {
 				createCategory(prompt);
+				return;
 			}
 		}
 	}
@@ -52,7 +56,8 @@ public class CreateQuestionUtils{
 			Main.categories.put(id, new_category);
 			Main.category_hierarchy.add(id);
 			Main.topic_hierarchy.put(id, new LinkedList<String>());
-			print(String.format("Category %1$s (%2$s) created.", prompt, id)); 
+			print(String.format("Category %1$s (%2$s) created.", prompt, id));
+			return;
 		}
 	}
 
@@ -83,6 +88,7 @@ public class CreateQuestionUtils{
 				createDialogue(c);
 			} else if (response.equals("y")) {
 				createTopic(prompt, category_id);
+				return;
 			}
 		}
 	}
@@ -121,30 +127,38 @@ public class CreateQuestionUtils{
 
 		String topic_id;
 		print("Which topic will this question fall under?");
-		StringBuilder sb = new StringBuilder();
-		ShowUtils.appendCategories(sb, 0);
-		print(sb.toString());
+		ShowUtils.showTopics();
 		while (true) {
 			response = c.readLine();
-			LinkedList<String> ll = Main.question_hierarchy.get(response);
-			if (ll == null) {
-				print("Invalid id provided");
-			} else {
+			if (Utils.idExists(response) && response.startsWith("t")) {
 				topic_id = response;
 				break;
+			} else {
+				print("Invalid id provided");
 			}
 		}
 		
 		String id = Utils.getNextId(Main.question_hierarchy.values());
 		if (id != null) {
-			int ordinal = Main.question_hierarchy.get(topic_id).size() + 1;
+			int ordinal;
+			if (Main.question_hierarchy.containsKey(topic_id)) {
+				ordinal = Main.question_hierarchy.get(topic_id).size() + 1;
+			} else {
+				ordinal = 1;
+			}
 			
 			if (type.equals("f")) {
-				createFreeQuestionDialogue(c, type, id, ordinal, prompt, topic_id);
+				createFreeQuestionDialogue(
+				c, type, prompt, ordinal, topic_id, id);
+				return;
 			} else if (type.equals("c")) {
-				createChoiceQuestionDialogue(c, type, id, ordinal, prompt, topic_id);
+				createChoiceQuestionDialogue(
+				c, type, prompt, ordinal, topic_id, id);
+				return;
 			} else {
-				createScaleQuestionDialogue(c, type, id, ordinal, prompt, topic_id);
+				createScaleQuestionDialogue(
+				c, type, prompt, ordinal, topic_id, id);
+				return;
 			}
 		} 
 	}
@@ -167,18 +181,31 @@ public class CreateQuestionUtils{
 				}
 			}
 		}
-		boolean confirm_question = confirmQuestion(c, String.format("id = %1$s\nprompt= %2$s\nnumber of answers = %3$s\nunder topic:%4$s", id, prompt, num_of_answers, topic_id));
+		boolean confirm_question = confirmQuestion(c, String.format("id = %1$s\nprompt = %2$s\nnumber of answers = %3$s\nunder topic: %4$s", id, prompt, num_of_answers, topic_id));
 		if (confirm_question) {
 			FreeQuestion new_object = new FreeQuestion(id, ordinal, prompt, topic_id, num_of_answers);
-			Main.questions.put(topic_id, new_object);
-			Main.question_hierarchy.get(topic_id).add(id);
-		}		
+			Main.questions.put(id, new_object);
+			if (Main.question_hierarchy.containsKey(topic_id) == false) {
+				LinkedList<String> ll = new LinkedList<>();
+				ll.add(id);
+				Main.question_hierarchy.put(topic_id, ll);
+			} else {
+				Main.question_hierarchy.get(topic_id).add(id);
+			}
+			print(String.format("Question %1$s created.", id));
+			print(new_object.prompt);
+			Utils.printTypeAndContent(Main.topics, "t");
+			Utils.printTypeAndContent(Main.topic_hierarchy, "th");
+			Utils.printTypeAndContent(Main.question_hierarchy, "qh");
+		}
 	}
 
 	private static boolean confirmQuestion(Console c, String details) {
-		String response;
 		while (true) {
-			response = c.readLine("Create a new question with\n%1$s?\n\n(y) yes\n(s) start over\n(e) exit", details);
+			print(String.format("Create a new question with\n%1$s?\n\n(y) yes\n(s) start over\n(e) exit",
+				details
+				));
+			String response = c.readLine();
 			if (response.equals("y")) {
 				return true;
 			} else if (response.equals("e")) {

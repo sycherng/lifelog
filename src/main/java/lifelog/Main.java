@@ -157,7 +157,7 @@ public class Main {
 			Collections.sort(members, new Comparator<AbstractQuestion>() {
 				@Override
 				public int compare(AbstractQuestion a, AbstractQuestion b) {
-					return a.ordinal - a.ordinal;
+					return a.ordinal - b.ordinal;
 				}
 			});
 			LinkedList<String> member_list = new LinkedList<>();

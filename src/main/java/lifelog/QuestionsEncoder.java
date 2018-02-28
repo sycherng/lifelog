@@ -28,7 +28,7 @@ public class QuestionsEncoder {
 				
 		}
 		private static void writeToFile(String json_string) throws IOException {
-				FileWriter writer = new FileWriter("C:\\Users\\latte\\git\\maven-lifelog\\lifelog\\src\\test\\resources\\categories_topics_questions.json");
+				FileWriter writer = new FileWriter("/home/ec2-user/ll/src/test/resources/categories_topics_questions.json");
 				try {
 						writer.write(json_string);
 				} finally {

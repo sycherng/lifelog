@@ -86,15 +86,21 @@ public class Utils {
     	 * @param collection of linked lists containing all ids of that SurveyItem type
     	 */
     	public static String getNextId(Collection<LinkedList<String>> ll_collection) {
-    		String max_id = "";
-    		for (LinkedList<String> ll: ll_collection) {
+		// TODO BUG: id is incorrect
+		String max_id = "";
+		for (LinkedList<String> ll: ll_collection) {
     			for (String id: ll) {
     				if (max_id.compareTo(id) < 0) {
     					max_id = id;
     				}
     			}
-    		} Integer new_number = Integer.parseInt(max_id.substring(1));
-    		int length = (int)(Math.log(new_number) + 1);
+    		} Integer new_number = Integer.parseInt(max_id.substring(1)) + 1;
+    		int length = (int)(Math.log10(new_number) + 1);
+		print(String.format("%1$s, %2$s, %3$s",
+			new_number,
+			length,
+			5 - length
+			));
     		if (length > 4) {
     			print("Maximum number of this element reached.");
     			return null;
