@@ -242,7 +242,14 @@ public class CreateQuestionUtils{
 					criteria.get(0), criteria.get(1), criteria.get(2), criteria.get(3), 
 					options_array);
 			Main.questions.put(id, choice_question);
-			Main.question_hierarchy.get(topic_id).add(id);
+			if (Main.question_hierarchy.containsKey(topic_id) == false) {
+				LinkedList<String> ll = new LinkedList<>();
+				ll.add(id);
+				Main.question_hierarchy.put(topic_id, ll);
+			} else {
+				Main.question_hierarchy.get(topic_id).add(id);
+			}
+			print(String.format("Question %1$s created", id));
 		}
 	}
 	
@@ -338,7 +345,7 @@ public class CreateQuestionUtils{
 		} ArrayList<Integer> criteria = getCriteria(c);
 		
 		boolean confirm_question = confirmQuestion(c, String.format(
-				"id = %1$s\nprompt= %2$s\nlow = %3$s high = %4$s variance = %5$s duration = %6$s\n\nWith range %7$s\nunder topic:%8$s", 
+				"id = %1$s\nprompt= %2$s\nlow = %3$s high = %4$s variance = %5$s duration = %6$s\n\nWith range %7$s\nunder topic: %8$s", 
 				id,	
 				prompt, 
 				criteria.get(0), criteria.get(1), criteria.get(2), criteria.get(3), 
@@ -351,8 +358,16 @@ public class CreateQuestionUtils{
 					criteria.get(0), criteria.get(1), criteria.get(2), criteria.get(3),
 					range,
 					legend);
-			Main.questions.put(topic_id, scale_question);
-			Main.question_hierarchy.get(topic_id).add(id);
-		} //else is handled by confirm_question()
+			print(scale_question.prompt);
+			Main.questions.put(id, scale_question);
+			if (Main.question_hierarchy.containsKey(topic_id) == false) {
+				LinkedList<String> ll = new LinkedList<>();
+				ll.add(id);
+				Main.question_hierarchy.put(topic_id, ll);
+			} else {
+				Main.question_hierarchy.get(topic_id).add(id);
+			}
+			print(String.format("Question %1$s created", id));
+			}
 	}
 }
