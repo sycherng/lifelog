@@ -222,14 +222,14 @@ public class CreateQuestionUtils{
 		//int critical_low, int critical_high, int critical_variance, int critical_duration, 
 		//HashMap<String, Option> options_map)
 		
-		HashMap<String, Option> options_map = createAllOptions(c);
-		
+		ArrayList<Option> options_array = createAllOptions(c);
+
 		print("You have assigned weights for each option. ");
 		ArrayList<Integer> criteria = getCriteria(c);
 		
-		String options_string = Option.makeOptionsString((Collection<Option>) options_map.values());
+		String options_string = Option.makeOptionsString(options_array);
 		boolean confirm_question = confirmQuestion(c, String.format(
-				"id = %1$s\nprompt= %2$s\nlow = %3$s high = %4$s variance = %5$s duration = %6$s\n\nWith options %7$s\nunder topic:%8$s", 
+				"id = %1$s\nprompt = %2$s\nlow = %3$s high = %4$s variance = %5$s duration = %6$s\noptions =\n%7$s\nunder topic: %8$s\n", 
 				id,	
 				prompt, 
 				criteria.get(0), criteria.get(1), criteria.get(2), criteria.get(3), 
@@ -240,13 +240,13 @@ public class CreateQuestionUtils{
 			ChoiceQuestion choice_question = new ChoiceQuestion(
 					id, ordinal, prompt, topic_id, 
 					criteria.get(0), criteria.get(1), criteria.get(2), criteria.get(3), 
-					options_map);
-			Main.questions.put(topic_id, choice_question);
+					options_array);
+			Main.questions.put(id, choice_question);
 			Main.question_hierarchy.get(topic_id).add(id);
-		} //else is handled by confirm_question()
+		}
 	}
 	
-	private static HashMap<String, Option> createAllOptions(Console c) {
+	private static ArrayList<Option> createAllOptions(Console c) {
 		HashMap<String, Option> result = new HashMap<>();
 		while (true) {
 			Option option = createOneOption(c);
@@ -255,13 +255,15 @@ public class CreateQuestionUtils{
 			}
 			//confirm if add more
 			print("Add more options?\n\n(y) yes\n(n) no");
-			String response = c.readLine();
-			if (response.equals("y")) {
-				continue;
-			} else if (response.equals("n")) {
-				return result;
-			} else {
-				return result;
+			while (true) {
+				String response = c.readLine();
+				if (response.equals("y")) {
+					break;
+				} else if (response.equals("n")) {
+					ArrayList<Option> options_array = new ArrayList<>();
+					options_array.addAll(result.values());
+					return options_array;
+				}
 			}
 		}
 	}
