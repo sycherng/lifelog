@@ -1,5 +1,6 @@
 package lifelog;
 import java.io.IOException;
+import java.io.Console;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.management.BadStringOperationException;
@@ -20,7 +21,7 @@ public class Main {
 	
 	public static void main (String[] args) throws IOException, ParseException, BadStringOperationException {
 		loadState();
-		/*Console c = System.console();
+		Console c = System.console();
 		if (c == null) {
 			System.err.println("No console. Shutting down...");
 			System.exit(1);
@@ -51,12 +52,16 @@ public class Main {
 				} else if (command.equals("delete")) {
 					DeleteUtils.deleteDialogue(c);
 				} else if (command.startsWith("delete") && (command.length() == 12)) {
-					DeleteUtils.deleteIdDialogue(command.split()[1]);
+					String id = command.split(" ")[1];
+					DeleteUtils.deleteIdDialogue(id);
 				} else if (command.equals("help")) {
 					ShowUtils.helpText();
-				} print("-------------------------");
+				} else {
+					print("Invalid command.");
+				} 
+				print("-------------------------");
 			}
-		}*/
+		}
 	}
 	
 	private static void loadState() throws IOException, ParseException, BadStringOperationException {

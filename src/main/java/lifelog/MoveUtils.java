@@ -10,7 +10,7 @@ import java.util.Map;
 /** Static utilities associated with rearranging display sequence of survey items.
  */
 public class MoveUtils {
-	private static void move(Console c, String message) {
+	public static void move(Console c, String message) {
 		String target = message.split(" ")[1];
 		//validate the id provided
 		LinkedList<String> peers = returnPeerLinkedList(target);

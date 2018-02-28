@@ -16,7 +16,7 @@ public class DeleteUtils {
 	public static final int UNASSIGNED_ORDINAL = 99999;
 	
 	public static void deleteDialogue(Console c) {
-		print("Delete which id? Enter id or (f) to delete.");
+		print("Delete which id? Enter id or (f) to exit.");
 		ShowUtils.showAll();
 		while (true) {
 			String response = c.readLine();
@@ -41,11 +41,11 @@ public class DeleteUtils {
 				deleteQuestion(id);
 			} 
 		} else {
-			print("Invalid id provided");
+			print("Invalid id provided.");
 		}	
 	}
 	
-	private static void deleteCategory(String id_to_delete) { //DONE, UNTESTED
+	private static void deleteCategory(String id_to_delete) {
 		/* ccccc may only be deleted if it is empty
 		 * if CategoryUnassigned doesnt exist yet, create it
 		 * update main.categories, main.category_hierarchy, main.topics_hierarchy
@@ -61,14 +61,16 @@ public class DeleteUtils {
 			Main.category_hierarchy.remove(id_to_delete);
 			LinkedList<String> topic_ids = Main.topic_hierarchy.get(id_to_delete);
 			Main.topic_hierarchy.remove(id_to_delete);
-			Main.topic_hierarchy.get(CATEGORY_UNASSIGNED_ID).addAll(topic_ids);
-			for (String topic_id: topic_ids) {
-				Main.topics.get(topic_id).category_id = CATEGORY_UNASSIGNED_ID;
-			}
+			if (topic_ids != null) {
+				Main.topic_hierarchy.get(CATEGORY_UNASSIGNED_ID).addAll(topic_ids);
+				for (String topic_id: topic_ids) {
+					Main.topics.get(topic_id).category_id = CATEGORY_UNASSIGNED_ID;
+				}
+			 } print(String.format("%1$s deleted.", id_to_delete));
 		}
 	}
 
-	private static void deleteTopic(String id_to_delete) { //DONE, UNTESTED
+	private static void deleteTopic(String id_to_delete) {
 		/* ttttt may only be deleted if it is empty
 		 * if TopicUnassigned doesnt exist yet, create it
 		 * update main.topics, main.topics_hierarchy, main.questions_hierarchy
@@ -80,30 +82,36 @@ public class DeleteUtils {
 		} else {
 			if (Utils.idExists(TOPIC_UNASSIGNED_ID) == false) {
 				spawnTopicUnassigned();
-			} String category_id = Main.topics.get(id_to_delete).category_id;
+			} 
+			String category_id = Main.topics.get(id_to_delete).category_id;
 			Main.topics.remove(id_to_delete);
-			Main.topic_hierarchy.remove(category_id);
+			Main.topic_hierarchy.get(category_id).remove(id_to_delete);
+
 			LinkedList<String> question_ids = Main.question_hierarchy.get(id_to_delete);
 			Main.question_hierarchy.remove(id_to_delete);
-			Main.question_hierarchy.get(TOPIC_UNASSIGNED_ID).addAll(question_ids);
-			for (String question_id: question_ids) {
-				Main.questions.get(question_id).topic_id = TOPIC_UNASSIGNED_ID;
-			} print(String.format("%1$s deleted.", id_to_delete));
+			
+			if (question_ids != null) {
+				Main.question_hierarchy.get(TOPIC_UNASSIGNED_ID).addAll(question_ids);
+				for (String question_id: question_ids) {
+					Main.questions.get(question_id).topic_id = TOPIC_UNASSIGNED_ID;
+				}
+			}
+			 print(String.format("%1$s deleted.", id_to_delete));
 			
 			if ((Utils.idExists(CATEGORY_UNASSIGNED_ID)) && (Utils.findChildIds(CATEGORY_UNASSIGNED_ID) == null)) {
 				deleteCategory(CATEGORY_UNASSIGNED_ID);
-			}
-		}		
+			}		
+		}
 	}
 
-	private static void deleteQuestion(String id_to_delete) { //DONE, UNTESTED
+	private static void deleteQuestion(String id_to_delete) {
 		/* update main.questions, main.questions_hierarchy
 		 * Delete ttttt if now empty
-		 */	
+		 */
 		String topic_id = Main.questions.get(id_to_delete).topic_id;
 		Main.questions.remove(id_to_delete);
-		Main.question_hierarchy.remove(topic_id);
-
+		Main.question_hierarchy.get(topic_id).remove(id_to_delete);
+		
 		print(String.format("%1$s deleted.", id_to_delete));
 		
 		if ((Utils.idExists(TOPIC_UNASSIGNED_ID)) && (Utils.findChildIds(TOPIC_UNASSIGNED_ID) == null)) {

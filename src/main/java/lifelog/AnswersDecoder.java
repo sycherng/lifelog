@@ -64,7 +64,7 @@ public class AnswersDecoder {
                 for (Entry<String, ArrayList<String>> e: (Collection<Map.Entry<String, ArrayList<String>>>)questionid_to_answer.entrySet()) {
                 		String question_id = (String)e.getKey();
                         ArrayList<String> answer = (ArrayList<String>)e.getValue();
-                        Answer new_answer = new Answer(question_id, date, answer);
+                        Answer new_answer = new Answer(answer);
                         result.put(question_id, new_answer);
                 }
                 return result;

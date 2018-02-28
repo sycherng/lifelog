@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class CreateQuestionUtils{
-	private static void createDialogue(Console c) {
+	public static void createDialogue(Console c) {
 		print("(c) create a new category\n(t) create a new topic\n(q) create a new question\n\n(e) exit this menu");
 		String response = c.readLine();
 		while (true) {

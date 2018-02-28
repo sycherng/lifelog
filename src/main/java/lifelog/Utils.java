@@ -48,6 +48,9 @@ public class Utils {
     	}
     	
     	public static String findParentId(String child_id) {
+		if (idExists(child_id) == false) {
+			return null;
+		}
     		if (child_id.startsWith("t")) {
     			return Main.topics.get(child_id).category_id;
     		} else if (child_id.startsWith("q")) {
@@ -57,6 +60,9 @@ public class Utils {
     	}
     	
     	public static LinkedList<String> findChildIds(String parent_id) {
+		if (idExists(parent_id) == false) {
+			return null;
+		}
     		if (parent_id.startsWith("c")) {
     			return Main.topic_hierarchy.get(parent_id);
     		} else if (parent_id.startsWith("t")) {
