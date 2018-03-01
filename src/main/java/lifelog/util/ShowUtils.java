@@ -1,24 +1,25 @@
-package lifelog;
-
-import static lifelog.Utils.print;
+package lifelog.util;
+import lifelog.*;
+import java.io.Console;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
 public class ShowUtils {
 	public static void helpText() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("quit\nlog\nshow all\nshow categories\nshow topics\nshow questions\nmove id\nreassign parent id\ncreate\ndelete\ndelete id\nview date category ids");
 	}
 	public static void showAll() {
 		StringBuilder sb = new StringBuilder();
 		appendCategories(sb, 2);
-		print(sb.toString());
+		System.out.println(sb.toString());
 	}
 	
 	public static void showCategories() {
 		StringBuilder sb = new StringBuilder();
 		appendCategories(sb, 1);
-		print(sb.toString());
+		System.out.println(sb.toString());
 	}
 	
 	public static void showTopics() {
@@ -26,7 +27,7 @@ public class ShowUtils {
 		for (String category_id: Main.category_hierarchy) {
 			appendTopics(sb, category_id, 1, 0);
 		}
-		print(sb.toString());		
+		System.out.println(sb.toString());		
 	}
 
 	public static void showQuestions() {
@@ -36,7 +37,7 @@ public class ShowUtils {
 				appendQuestions(sb, topic_id, 0);
 			}
 		}
-		print(sb.toString());
+		System.out.println(sb.toString());
 	}
 
 	public static void appendCategories(StringBuilder sb, int layers_to_show) { // layers = 0 means show only this layer
@@ -77,5 +78,18 @@ public class ShowUtils {
 						)));
 			}
 		}
+	}
+	
+	public static void viewDialogue(Console c, String command) {
+		String[] message = command.split(" ");
+		LocalDate specified_date = Utils.parseDate(message[1]);
+		if (specified_date == null) {
+			return;
+		} for (String id: Arrays.copyOfRange(message, 2, message.length -1)) {
+			if (Utils.idExists(id) == false) {
+				System.out.printf(); //TODO
+				continue;
+			}
+		} 
 	}
 }

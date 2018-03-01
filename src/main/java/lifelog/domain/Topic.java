@@ -1,4 +1,4 @@
-package lifelog;
+package lifelog.domain;
 import org.json.simple.JSONObject;
 import static java.lang.Math.toIntExact;
 

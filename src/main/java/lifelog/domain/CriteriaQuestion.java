@@ -1,4 +1,4 @@
-package lifelog;
+package lifelog.domain;
 
 public abstract class CriteriaQuestion extends AbstractQuestion {
         public int critical_low;

@@ -1,4 +1,4 @@
-package lifelog;
+package lifelog.domain;
 
 public abstract class AbstractQuestion extends SurveyItem implements Question {
     public String id;

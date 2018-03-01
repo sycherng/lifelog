@@ -1,6 +1,4 @@
-package lifelog;
-
-import static lifelog.Utils.print;
+package lifelog.domain;
 
 import java.util.*;
 
@@ -16,11 +14,11 @@ public class Option {
         }
         
         public void showOptionWithWeight() {
-        	print(String.format("(%1$s) %2$s (weight: %3$s)", abbreviation, full, weight));
+        	System.out.println(String.format("(%1$s) %2$s (weight: %3$s)", abbreviation, full, weight));
         }
         
         public void showOption() {
-        	print(String.format("(%1$s) %2$s", abbreviation, full));
+        	System.out.println(String.format("(%1$s) %2$s", abbreviation, full));
         }
         
     	public static String makeOptionsStringWithWeight(Collection<Option> options) {

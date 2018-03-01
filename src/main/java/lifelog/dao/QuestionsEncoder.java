@@ -1,7 +1,7 @@
-package lifelog;
-
+package lifelog.dao;
+import lifelog.*;
+import lifelog.domain.*;
 import java.util.Map;
-
 import org.json.simple.JSONObject;
 import java.io.FileWriter;
 import java.io.IOException;

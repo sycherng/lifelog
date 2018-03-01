@@ -1,10 +1,8 @@
-package lifelog;
-
-import static lifelog.Utils.print;
+package lifelog.util;
+import lifelog.*;
+import lifelog.domain.*;
 
 import java.io.Console;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 public class DeleteUtils {
@@ -16,12 +14,12 @@ public class DeleteUtils {
 	public static final int UNASSIGNED_ORDINAL = 99999;
 	
 	public static void deleteDialogue(Console c) {
-		print("Delete which id? Enter id or (f) to exit.");
+		System.out.println("Delete which id? Enter id or (f) to exit.");
 		ShowUtils.showAll();
 		while (true) {
 			String response = c.readLine();
 			if (response.equals("f")) {
-				print("Exiting delete mode...");
+				System.out.println("Exiting delete mode...");
 				return;
 			} else {
 				deleteIdDialogue(response);
@@ -41,7 +39,7 @@ public class DeleteUtils {
 				deleteQuestion(id);
 			} 
 		} else {
-			print("Invalid id provided.");
+			System.out.println("Invalid id provided.");
 		}	
 	}
 	
@@ -52,7 +50,7 @@ public class DeleteUtils {
 		 * update all child Topics' category_id to category_unassigned_id
 		 */
 		if (id_to_delete.equals(CATEGORY_UNASSIGNED_ID) && !(Main.category_hierarchy.isEmpty())) {
-			print(String.format("%1$s auto-deletes when empty.", CATEGORY_UNASSIGNED_NAME));
+			System.out.printf("%1$s auto-deletes when empty.", CATEGORY_UNASSIGNED_NAME);
 		} else {
 			if (Utils.idExists(CATEGORY_UNASSIGNED_ID) == false) {
 				spawnCategoryUnassigned();
@@ -66,7 +64,7 @@ public class DeleteUtils {
 				for (String topic_id: topic_ids) {
 					Main.topics.get(topic_id).category_id = CATEGORY_UNASSIGNED_ID;
 				}
-			 } print(String.format("%1$s deleted.", id_to_delete));
+			 } System.out.printf("%1$s deleted.", id_to_delete);
 		}
 	}
 
@@ -78,7 +76,7 @@ public class DeleteUtils {
 		 * Delete ccccc if now empty
 		 */
 		if (id_to_delete.equals(TOPIC_UNASSIGNED_ID) && !(Utils.idExists(CATEGORY_UNASSIGNED_ID))) {
-			print(String.format("%1$s auto-deletes when empty.", TOPIC_UNASSIGNED_NAME));
+			System.out.printf("%1$s auto-deletes when empty.", TOPIC_UNASSIGNED_NAME);
 		} else {
 			if (Utils.idExists(TOPIC_UNASSIGNED_ID) == false) {
 				spawnTopicUnassigned();
@@ -96,7 +94,7 @@ public class DeleteUtils {
 					Main.questions.get(question_id).topic_id = TOPIC_UNASSIGNED_ID;
 				}
 			}
-			 print(String.format("%1$s deleted.", id_to_delete));
+			 System.out.printf("%1$s deleted.", id_to_delete);
 			
 			if ((Utils.idExists(CATEGORY_UNASSIGNED_ID)) && (Utils.findChildIds(CATEGORY_UNASSIGNED_ID) == null)) {
 				deleteCategory(CATEGORY_UNASSIGNED_ID);
@@ -112,7 +110,7 @@ public class DeleteUtils {
 		Main.questions.remove(id_to_delete);
 		Main.question_hierarchy.get(topic_id).remove(id_to_delete);
 		
-		print(String.format("%1$s deleted.", id_to_delete));
+		System.out.printf("%1$s deleted.", id_to_delete);
 		
 		if ((Utils.idExists(TOPIC_UNASSIGNED_ID)) && (Utils.findChildIds(TOPIC_UNASSIGNED_ID) == null)) {
 			deleteCategory(TOPIC_UNASSIGNED_ID);

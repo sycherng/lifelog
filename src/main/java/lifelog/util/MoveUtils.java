@@ -1,7 +1,6 @@
-package lifelog;
+package lifelog.util;
+import lifelog.*;
 
-
-import static lifelog.Utils.print;
 import java.io.Console;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -37,7 +36,7 @@ public class MoveUtils {
 				}
 			  } 
 		} else {
-			print("Invalid id provided.");
+			System.out.println("Invalid id provided.");
 			return null;
 		}
 		return null;
@@ -57,12 +56,12 @@ public class MoveUtils {
 				sb.append("(u) move up\\n");
 			} if (current_index != (ll.size() - 1)) {
 				sb.append("(d) move down\\n");
-			} print(String.format("%1$s%2$s", sb.toString(), finish_string));
+			} System.out.printf("%1$s%2$s", sb.toString(), finish_string);
 
 			response = c.readLine();
 
 			if (response.equals("e")) {
-				print(String.format("Exiting move mode...", target));
+				System.out.printf("Exiting move mode...", target);
 				return;
 			} else {
 				int diff = 0;
@@ -89,7 +88,7 @@ public class MoveUtils {
 			}
 			sb.append("\n");
 		}
-		print(sb.toString());
+		System.out.println(sb.toString());
 	}
 	
 	private static void swapOrdinal(int current_index, int diff, LinkedList<String> ll) {

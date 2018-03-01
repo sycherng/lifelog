@@ -1,4 +1,7 @@
 package lifelog;
+import lifelog.dao.*;
+import lifelog.domain.*;
+import lifelog.util.*;
 import java.io.IOException;
 import java.io.Console;
 import java.util.*;
@@ -7,8 +10,6 @@ import javax.management.BadStringOperationException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import java.time.LocalDate;
-
-import static lifelog.Utils.print;
 
 public class Main {
 	public static HashMap<String, Category> categories;
@@ -26,12 +27,12 @@ public class Main {
 			System.err.println("No console. Shutting down...");
 			System.exit(1);
 		} else {
-			print("Welcome back to your lifelog.");
+			System.out.println("Welcome back to your lifelog.");
 			while (true) {
 				String command = c.readLine();
 				if (command.equals("quit")) {
 					saveState();
-					print("Shutting down...");
+					System.out.println("Shutting down...");
 					System.exit(1);
 				} else if (command.equals("log")) {
 					CreateAnswerUtils.log(c);
@@ -54,12 +55,14 @@ public class Main {
 				} else if (command.startsWith("delete") && (command.length() == 12)) {
 					String id = command.split(" ")[1];
 					DeleteUtils.deleteIdDialogue(id);
+				} else if (command.startsWith("view")){
+					ShowUtils.viewDialogue(c, command);
 				} else if (command.equals("help")) {
 					ShowUtils.helpText();
 				} else {
-					print("Invalid command.");
+					System.out.println("Invalid command.");
 				} 
-				print("-------------------------");
+				System.out.println("-------------------------");
 			}
 		}
 	}
@@ -172,7 +175,7 @@ public class Main {
 		updateOrdinals();
 		QuestionsEncoder.encodeAll(); //encodes all categories, topics, questions
 		AnswersEncoder.encodeAnswers(); //encodes all answers
-		print("Saved!");
+		System.out.println("Saved!");
 	}
 
 	private static void updateOrdinals() {
@@ -203,17 +206,3 @@ public class Main {
 		}
 	}
 }
-
-///* Inserting a new answer
-// * 1. insertion (Date, question_id, String[]) -> AbstractQuestion
-// * 2. autosave: take the AbstractQuestion we just made, serialize it, and add it to the answers json
-// */
-//	/** Uses question_id as a key to all_questions to get the AbstractQuestion,
-//	 * unrolls args and processes them,
-//	 * calls AbstractQuestion.createAnswerInstance() to make a new answered question,
-//	 * adds the fully answered question to the all_answers hashmap
-//	 */
-//	public void createAnswer(String question_id, Date date, String[] args) {
-//		//unimplemented
-//		//answer = new question_template.createAnswerInstance()
-//	}

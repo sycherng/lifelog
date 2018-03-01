@@ -1,5 +1,6 @@
-package lifelog;
-
+package lifelog.dao;
+import lifelog.*;
+import lifelog.domain.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,10 +11,6 @@ import java.io.IOException;
 
 import org.json.simple.JSONObject;
 
-/**given a HashMap<LocalDate, HashMap<String, Answer>> answers
- * object -> jsonobject ---parser---> string
- * save into a file answers.json 
- */
 public class AnswersEncoder {
 		//inner = hashmap of questionid to answer contents
 		//middle = hashmap of date to innermap

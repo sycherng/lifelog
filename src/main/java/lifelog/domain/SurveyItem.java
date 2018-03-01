@@ -1,4 +1,4 @@
-package lifelog;
+package lifelog.domain;
 
 public abstract class SurveyItem {
 	public String id;

@@ -1,22 +1,33 @@
-package lifelog;
+package lifelog.util;
+import lifelog.*;
 
 import java.io.Console;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Utils {
-        /** Given an Object, print the var name passed in, its type and contents.
+        /** For debugging. Given an Object, print the var name passed in, its type and contents.
          */
         public static void printTypeAndContent(Object obj, String name) {
-                print(String.format("INSPECTING %1$s | TYPE %2$s | CONTENTS %3$s", name, obj.getClass().getName(),obj.toString()));
-        }
-
-        /** Takes a string and prints it. Simplifies the command for QoL while debugging. */
-        public static void print(String str) {
-                System.out.println(str);
+            System.out.printf("INSPECTING %1$s | TYPE %2$s | CONTENTS %3$s", 
+            		name, 
+            		obj.getClass().getName(),
+            		obj.toString()
+            		);
         }
         
+        /** For debugging. Given an Object, print the var name passed in, its type and contents.
+         */
+        public static void printTypeAndContent(Object obj) {
+            System.out.printf("INSPECTING ... | TYPE %1$s | CONTENTS %2$s", 
+            		obj.getClass().
+            		getName(), 
+            		obj.toString()
+            		);
+        }    
 
     	public static boolean idExists(String id) {
     		if (id.length() != 5) {
@@ -86,7 +97,6 @@ public class Utils {
     	 * @param collection of linked lists containing all ids of that SurveyItem type
     	 */
     	public static String getNextId(Collection<LinkedList<String>> ll_collection) {
-		// TODO BUG: id is incorrect
 		String max_id = "";
 		for (LinkedList<String> ll: ll_collection) {
     			for (String id: ll) {
@@ -96,13 +106,9 @@ public class Utils {
     			}
     		} Integer new_number = Integer.parseInt(max_id.substring(1)) + 1;
     		int length = (int)(Math.log10(new_number) + 1);
-		print(String.format("%1$s, %2$s, %3$s",
-			new_number,
-			length,
-			5 - length
-			));
+		System.out.printf("%1$s, %2$s, %3$s", new_number, length, 5 - length);
     		if (length > 4) {
-    			print("Maximum number of this element reached.");
+    			System.out.println("Maximum number of this element reached.");
     			return null;
     		} else {
     			String new_id = max_id.substring(0, (5 - length)) + new_number.toString();
@@ -118,8 +124,18 @@ public class Utils {
     				answer = Integer.parseInt(response);
     				return answer;
     			} catch(Exception NumberFormatException) {
-    				print("Please enter an integer.");
+    				System.out.println("Please enter an integer.");
     			}
+    		}
+    	}
+    	
+    	public static LocalDate parseDate(String date_string) {
+    		try {
+    			LocalDate date = LocalDate.parse(date_string);
+    			return date;
+    		} catch(DateTimeParseException e) {
+    			System.out.printf("%1$s is not a valid date.", date_string);
+    			return null;
     		}
     	}
 }

@@ -1,7 +1,6 @@
-package lifelog;
+package lifelog.domain;
 import java.util.*;
 import java.lang.String;
-import java.time.LocalDate;
 import org.json.simple.JSONObject;
 import static java.lang.Math.toIntExact;
 
@@ -13,10 +12,10 @@ public class ChoiceQuestion extends CriteriaQuestion{
                 this.options = makeOptions(options_map);
         }
 
-	public ChoiceQuestion(String id, int ordinal, String prompt, String topic_id, int critical_low, int critical_high, int critical_variance, int critical_duration, ArrayList<Option> option_list) {
-		super(id, ordinal, prompt, topic_id, "Choice", 	critical_low, critical_high, critical_variance, critical_duration);
-		this.options = option_list;
-	}
+		public ChoiceQuestion(String id, int ordinal, String prompt, String topic_id, int critical_low, int critical_high, int critical_variance, int critical_duration, ArrayList<Option> option_list) {
+			super(id, ordinal, prompt, topic_id, "Choice", 	critical_low, critical_high, critical_variance, critical_duration);
+			this.options = option_list;
+		}
 
         /** Given a JSON map of a ChoiceQuestion, deserialize it
          * and return it as a ChoiceQuestion object

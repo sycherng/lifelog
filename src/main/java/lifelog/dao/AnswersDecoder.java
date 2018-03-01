@@ -1,4 +1,5 @@
-package lifelog;
+package lifelog.dao;
+import lifelog.domain.*;
 import org.json.simple.parser.*;
 import org.json.simple.JSONObject;
 import java.io.FileReader;

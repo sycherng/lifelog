@@ -1,7 +1,6 @@
-package lifelog;
+package lifelog.domain;
 import org.json.simple.JSONObject;
 
-import java.time.LocalDate;
 import static java.lang.Math.toIntExact;
 
 public class FreeQuestion extends AbstractQuestion {
