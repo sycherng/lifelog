@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -98,7 +99,8 @@ public class ShowUtils {
 		buildScaleQuestionsView(sb, id_map.get("Scale"), date_list);
 		buildChoiceQuestionsView(sb, id_map.get("Choice"), date_list);
 		buildFreeQuestionsView(sb, id_map.get("Free"), date_list);
-	} 
+		System.out.println(sb.toString());
+	}
 
 	private static List<String> getValidIds(String[] message) {
 		ArrayList<String> result = new ArrayList<String>();
@@ -163,8 +165,8 @@ public class ShowUtils {
 	
 	private static void buildScaleQuestionsView(StringBuilder sb, ArrayList<String> ids, List<LocalDate> date_list) {
 		for (String id: ids) {
-			CriteriaQuestion question_object = (CriteriaQuestion)Main.questions.get(id);
-			String prompt = question_object.prompt.substring(0, 11); // 10 char limit
+			ScaleQuestion scale_question = (ScaleQuestion)Main.questions.get(id);
+			String prompt = scale_question.prompt.substring(0, 11); // 10 char limit
 			List<Integer> answers = null;
 			for (LocalDate date: date_list) {
 				answers = Main.answers.get(date)
@@ -172,8 +174,63 @@ public class ShowUtils {
 						.stream()
 							.map(Integer::parseInt)
 							.collect(Collectors.toList());
-			} String comment = getComment(answers, question_object);
-		} //TODO stringbuild with above fields
+			} String comment = getComment(answers, scale_question);
+			sb.append(prompt);
+			for (Integer answer: answers) {
+				sb.append(answer.toString());
+			} sb.append(comment);
+		} 
+	}
+	
+	private static void buildChoiceQuestionsView(StringBuilder sb, ArrayList<String> question_ids, List<LocalDate> date_list) {
+		for (String question_id: question_ids) {
+			ChoiceQuestion choice_question = (ChoiceQuestion)Main.questions.get(question_id);
+			String prompt = choice_question.prompt.substring(0, 11);
+			ArrayList<Integer> answer_weights_across_dates = new ArrayList<>();
+			ArrayList<String> answer_abbreviations_across_dates = new ArrayList<>();
+			for (LocalDate date: date_list) {
+				List<String> answers_string_for_date = Main.answers.get(date).get(question_id).answer;
+				StringBuilder abbreviations_builder_for_date = new StringBuilder();
+				for (String abbreviation_string: answers_string_for_date) {
+					char abbreviation = abbreviation_string.charAt(0);
+					int weight = findWeight(abbreviation, choice_question.options);
+					answer_weights_across_dates.add(weight);
+					abbreviations_builder_for_date.append(abbreviation_string);
+					abbreviations_builder_for_date.append(" ");
+				}
+			answer_abbreviations_across_dates.add(abbreviations_builder_for_date.toString());
+			abbreviations_builder_for_date.setLength(0);
+			}
+			String comment = getComment(answer_weights_across_dates, choice_question);
+			sb.append(prompt);
+			for (String abbreviations_builder_for_date: answer_abbreviations_across_dates) {
+				sb.append(abbreviations_builder_for_date);
+			} sb.append(comment);
+		}
+	}
+	
+	private static int findWeight(char goal, ArrayList<Option> options) {
+		return options.stream().filter(x -> x.abbreviation == goal).collect(Collectors.toList()).get(0).weight;
+	}
+	
+	private static void buildFreeQuestionsView(StringBuilder sb, ArrayList<String> ids,	List<LocalDate> date_list) {
+		for (String id: ids) {
+			FreeQuestion free_question = (FreeQuestion)Main.questions.get(id);
+			String prompt = free_question.prompt.substring(0, 11);
+			ArrayList<ArrayList<String>> answers_across_dates= new ArrayList<>();
+			for (LocalDate date: date_list) {
+				answers_across_dates.add(Main.answers.get(date).get(id).answer);
+			}
+			sb.append(prompt);
+			sb.append("\n");
+			for (ArrayList<String> answers_for_date: answers_across_dates) {
+				for (String answer: answers_for_date) {
+					sb.append(String.join("", Collections.nCopies(10, " "))); // 10 spaces
+					sb.append(answer);
+					sb.append("\n");
+				}
+			}
+		}
 	}
 	
 	private static String getComment(List<Integer> answers, CriteriaQuestion question_object) {
@@ -221,11 +278,7 @@ public class ShowUtils {
 	}
 	
 	private static boolean satisfiesDuration(int critical_duration, ArrayList<Integer> streak_arr) {
-		for (Integer days: streak_arr) {
-			if (days >= critical_duration) {
-				return true;
-			}
-		} return false;
+		return streak_arr.stream().filter(d -> d >= critical_duration).findAny().isPresent();
 	}
 	private static void countStreaks(List<Integer> answers, CriteriaQuestion question_object, int critical_high_count, int critical_low_count, ArrayList<Integer> critical_high_streaks, ArrayList<Integer> critical_low_streaks, ArrayList<Integer> increase_streak, ArrayList<Integer> decrease_streak) {
 		int last_num = 0;
