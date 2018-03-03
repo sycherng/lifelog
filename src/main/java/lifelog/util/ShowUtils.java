@@ -256,7 +256,12 @@ public class ShowUtils {
 	}
 	
 	private static int findWeight(char goal, ArrayList<Option> options) {
-		return options.stream().filter(x -> x.abbreviation == goal).collect(Collectors.toList()).get(0).weight;
+		List<Option> result =  options.stream().filter(x -> x.abbreviation == goal).collect(Collectors.toList());
+		if (result.size() == 1) {
+			return result.get(0).weight;
+		} else {
+			return 0;
+		}
 	}
 	
 	private static void buildFreeQuestionsView(StringBuilder sb, ArrayList<String> ids,	List<LocalDate> date_list) {
