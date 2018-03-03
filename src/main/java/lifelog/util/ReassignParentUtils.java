@@ -10,11 +10,11 @@ public class ReassignParentUtils {
 		String target_id = message.split(" ")[2];
 		HashMap<String, LinkedList<String>> target_hierarchy_map = Utils.findHierarchyMap(c, target_id);
 		if (target_hierarchy_map == null) {
-			System.out.System.out.printlnln("Invalid id supplied.");
+			System.out.println("Invalid id supplied.");
 			return;
 		} String parent_id = Utils.findParentId(target_id);
 		if (parent_id == null) {
-			System.out.System.out.printlnln("Invalid id supplied.");
+			System.out.println("Invalid id supplied.");
 			return;
 		}
 		System.out.printf("%1$s currently belongs under %2$s.\nProvide the id of its new parent, or respond with \"(e)\" to exit parent reassigning mode.", 

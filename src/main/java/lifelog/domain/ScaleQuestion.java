@@ -8,36 +8,36 @@ public class ScaleQuestion extends CriteriaQuestion{
         public String legend;
 
         public ScaleQuestion(String id, int ordinal, String prompt, String topic_id, int critical_low, int critical_high, int critical_variance, int critical_duration, int range_start, int range_stop, int range_step, String legend) {
-                super(id, ordinal, prompt, topic_id, "Scale", critical_low, critical_high, critical_variance, critical_duration);
+	        super(id, ordinal, prompt, topic_id, "Scale", critical_low, critical_high, critical_variance, critical_duration);
                 this.range = new Range(range_start, range_stop, range_step);
                 this.legend = legend;
         }
         
         public ScaleQuestion(String id, int ordinal, String prompt, String topic_id, int critical_low, int critical_high, int critical_variance, int critical_duration, Range range, String legend) {
-            super(id, ordinal, prompt, topic_id, "Scale", critical_low, critical_high, critical_variance, critical_duration);
-            this.range = range;
-            this.legend = legend;
-    }
+        	super(id, ordinal, prompt, topic_id, "Scale", critical_low, critical_high, critical_variance, critical_duration);
+		this.range = range;
+		this.legend = legend;
+	}
 
-	    @SuppressWarnings("unchecked") //Unchecked cast from map.get("range") to HashMap<String, Integer> for JSON parsing of Range objects.
-		public static ScaleQuestion makeFromMap(String id, JSONObject map) {
-				int ordinal = toIntExact((Long)map.get("ordinal"));
-				String prompt = (String) map.get("prompt");
-				String topic_id = (String) map.get("topic_id");
-				int critical_variance = toIntExact((Long)map.get("critical_variance"));
-				int critical_low = toIntExact((Long)map.get("critical_low"));
-				int critical_high = toIntExact((Long)map.get("critical_high"));
-				int critical_duration = toIntExact((Long)map.get("critical_duration"));
-				HashMap<String, Long> range = (HashMap<String, Long>) map.get("range");
-				int range_start = toIntExact((Long)range.get("range_start"));
-				int range_stop = toIntExact((Long)range.get("range_stop"));
-				int range_step = toIntExact((Long)range.get("range_step"));
-				String legend = (String) map.get("legend");
-				return new ScaleQuestion(id, ordinal, prompt, topic_id, critical_low, critical_high, critical_variance, critical_duration, range_start, range_stop, range_step, legend);
-		        }
+	@SuppressWarnings("unchecked") //Unchecked cast from map.get("range") to HashMap<String, Integer> for JSON parsing of Range objects.
+	public static ScaleQuestion makeFromMap(String id, JSONObject map) {
+		int ordinal = toIntExact((Long)map.get("ordinal"));
+		String prompt = (String) map.get("prompt");
+		String topic_id = (String) map.get("topic_id");
+		int critical_variance = toIntExact((Long)map.get("critical_variance"));
+		int critical_low = toIntExact((Long)map.get("critical_low"));
+		int critical_high = toIntExact((Long)map.get("critical_high"));
+		int critical_duration = toIntExact((Long)map.get("critical_duration"));
+		HashMap<String, Long> range = (HashMap<String, Long>) map.get("range");
+		int range_start = toIntExact((Long)range.get("range_start"));
+		int range_stop = toIntExact((Long)range.get("range_stop"));
+		int range_step = toIntExact((Long)range.get("range_step"));
+		String legend = (String) map.get("legend");
+		return new ScaleQuestion(id, ordinal, prompt, topic_id, critical_low, critical_high, critical_variance, critical_duration, range_start, range_stop, range_step, legend);
+	}
 
-        @SuppressWarnings("unchecked")
-		public JSONObject templateToJSONObject() {
+	@SuppressWarnings("unchecked")
+	public JSONObject templateToJSONObject() {
                 JSONObject question_details = new JSONObject();
                 question_details.put("ordinal", this.ordinal);
                 question_details.put("prompt", this.prompt);

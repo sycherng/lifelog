@@ -134,7 +134,7 @@ public class Utils {
     			LocalDate date = LocalDate.parse(date_string);
     			return date;
     		} catch(DateTimeParseException e) {
-    			System.out.printf("%1$s is not a valid date.", date_string);
+    			System.out.printf("\"%1$s\" is not a valid date.\n", date_string);
     			return null;
     		}
     	}

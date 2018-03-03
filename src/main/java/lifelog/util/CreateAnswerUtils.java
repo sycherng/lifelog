@@ -53,7 +53,7 @@ public class CreateAnswerUtils {
 	}
 	
 	private static Answer createAnswer(Console c, AbstractQuestion question, String topic_prompt, String category_prompt) {
-		System.out.printf("\n%1$s > %2$s", category_prompt, topic_prompt);
+		System.out.printf("\n%1$s > %2$s\n", category_prompt, topic_prompt);
 		if (question.type == "Free") {
 			return createFreeAnswer(c, question);
 		} else if (question.type == "Scale") {
@@ -71,7 +71,7 @@ public class CreateAnswerUtils {
 		sb.append(free_question.prompt);
 		int num_answers_left = free_question.num_of_answers;
 		if (num_answers_left > 1) {
-			sb.append(String.format("(%1$s answers)", num_answers_left));
+			sb.append(String.format(" (%1$s answers)", num_answers_left));
 		} System.out.println(sb.toString());
 		while (true) {
 			Answer answer_object;
@@ -153,6 +153,4 @@ public class CreateAnswerUtils {
 			answers.add("x");
 		} return new Answer(answers);
 	}
-
-	//TODO "redo question" for the day option
 }
